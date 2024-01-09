@@ -1,11 +1,12 @@
 import express from 'express'
-import {UserService} from './src/Services/UserService'
-import {DB} from './src/Services/DB'
-import {QueryBuilder} from './src/Services/QueryBuilder'
-import {UserRepository} from './src/Repositories/UserRepository'
-import {PostRepository} from './src/Repositories/PostRepository'
-import {PostService} from './src/Services/PostService'
-import {Container} from './src/Container'
+import { UserService } from './src/Services/UserService'
+import { DB } from './src/Services/DB'
+import { QueryBuilder } from './src/Services/QueryBuilder'
+import { UserRepository } from './src/Repositories/UserRepository'
+import { PostRepository } from './src/Repositories/PostRepository'
+import { PostService } from './src/Services/PostService'
+import { Container } from './src/Container'
+import { UsersController } from './src/Controllers/UsersController'
 
 const app = express();
 const port = 3000;
@@ -15,6 +16,7 @@ const userRepository = Container.createInstance<UserRepository>(UserRepository.n
 const postRepository = Container.createInstance<PostRepository>(PostRepository.name, db, qb);
 const userService = Container.createInstance<UserService>(UserService.name, userRepository);
 const postService = Container.createInstance<PostService>(PostService.name, postRepository);
+const usersController = Container.createInstance<UsersController>(UsersController.name, userService);
 
 app.use(express.json());
 
@@ -27,10 +29,7 @@ app.get('/', (req, res) => {
 
 });
 
-app.get('/users', async (req, res) => {
-    const users = (await userService.index()).map(user => user.toJson());
-    res.send(users);
-});
+app.get('/users', async (req, res) => { usersController.index(req, res); });
 
 app.get('/users/:id', async (req, res) => {
     const userId = parseInt(req.params.id);
@@ -75,7 +74,7 @@ app.delete('/users/:id', async (req, res) => {
         return;
     }
 
-    res.send({success: true});
+    res.send({ success: true });
 });
 
 app.get('/posts', async (req, res) => {
