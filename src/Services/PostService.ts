@@ -1,7 +1,7 @@
-import {Post} from '../Models/Post'
-import {Validator} from './Validator'
-import {ModelSetter} from './ModelSetter'
-import {PostRepository} from "../Repositories/PostRepository";
+import { Post } from '../Models/Post'
+import { Validator } from './Validator'
+import { ModelSetter } from './ModelSetter'
+import { PostRepository } from '../Repositories/PostRepository'
 
 export class PostService {
     private postRepo: PostRepository;

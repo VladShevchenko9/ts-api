@@ -1,4 +1,4 @@
-import {Connection, createConnection, escape as mySqlEscape} from 'mysql'
+import { Connection, createConnection, escape as mySqlEscape } from 'mysql'
 
 export class DB {
     private _connection: Connection;

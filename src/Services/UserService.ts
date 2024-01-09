@@ -1,7 +1,7 @@
-import {User} from '../Models/User'
-import {Validator} from './Validator'
-import {ModelSetter} from './ModelSetter'
-import {UserRepository} from '../Repositories/UserRepository'
+import { User } from '../Models/User'
+import { Validator } from './Validator'
+import { ModelSetter } from './ModelSetter'
+import { UserRepository } from '../Repositories/UserRepository'
 
 export class UserService {
     private userRepo: UserRepository;
@@ -46,7 +46,7 @@ export class UserService {
         let user;
 
         try {
-            user = await this.userRepo.findBy({email: data.email});
+            user = await this.userRepo.findBy({ email: data.email });
         } catch (e) {
             throw new Error('Unable to retrieve user data');
         }

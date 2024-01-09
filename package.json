@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.ts",
-  "scripts": {},
+  "scripts": {
+    "script": "ts-node",
+    "tests": "ts-node tests/test.ts",
+    "app": "ts-node app.ts"
+  },
   "author": "Vlad Shevchenko",
   "license": "MIT",
   "dependencies": {

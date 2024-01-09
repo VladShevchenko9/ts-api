@@ -1,11 +1,11 @@
 import express from 'express'
 import {UserService} from './src/Services/UserService'
 import {DB} from './src/Services/DB'
-import {QueryBuilder} from "./src/Services/QueryBuilder";
-import {UserRepository} from "./src/Repositories/UserRepository";
-import {PostRepository} from "./src/Repositories/PostRepository";
-import {PostService} from "./src/Services/PostServiсe";
-import {Container} from "./src/Container";
+import {QueryBuilder} from './src/Services/QueryBuilder'
+import {UserRepository} from './src/Repositories/UserRepository'
+import {PostRepository} from './src/Repositories/PostRepository'
+import {PostService} from './src/Services/PostService'
+import {Container} from './src/Container'
 
 const app = express();
 const port = 3000;

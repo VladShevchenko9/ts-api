@@ -1,4 +1,4 @@
-import {AbstractModel} from './AbstractModel'
+import { AbstractModel } from './AbstractModel'
 
 export class Post extends AbstractModel {
     protected attributes = {

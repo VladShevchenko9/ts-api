@@ -1,4 +1,4 @@
-import {AbstractModel} from '../Models/AbstractModel'
+import { AbstractModel } from '../Models/AbstractModel'
 
 export class ModelSetter {
     public static setModelData(data: Record<string, any>, model: AbstractModel): AbstractModel {

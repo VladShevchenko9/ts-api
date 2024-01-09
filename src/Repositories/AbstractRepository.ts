@@ -1,5 +1,5 @@
-import {DB} from '../Services/DB'
-import {QueryBuilder} from '../Services/QueryBuilder'
+import { DB } from '../Services/DB'
+import { QueryBuilder } from '../Services/QueryBuilder'
 
 export abstract class AbstractRepository {
     protected db: DB;

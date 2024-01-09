@@ -1,5 +1,5 @@
-import {User} from '../Models/User'
-import {AbstractRepository} from './AbstractRepository'
+import { User } from '../Models/User'
+import { AbstractRepository } from './AbstractRepository'
 
 export class UserRepository extends AbstractRepository {
     get table(): string {
@@ -21,7 +21,7 @@ export class UserRepository extends AbstractRepository {
 
         const totalData = await this.db.getRow(queryBuilder.sql);
 
-        if (totalData.hasOwnProperty('total_users' ) && typeof totalData.total_users === 'number') {
+        if (totalData.hasOwnProperty('total_users') && typeof totalData.total_users === 'number') {
             return totalData.total_users;
         }
 

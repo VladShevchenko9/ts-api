@@ -1,10 +1,10 @@
-import {DB} from './DB'
+import { DB } from './DB'
 
 export class QueryBuilder {
     private _sql: string = '';
     private _availableMethods: string[] = [this.select.name, this.insert.name, this.update.name, this.delete.name];
     private _forbiddenMethods: string[] = [];
-    
+
     get sql(): string {
         const sql = this._sql;
         this.reset();

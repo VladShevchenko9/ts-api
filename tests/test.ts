@@ -1,11 +1,11 @@
-import {UserService} from '../src/Services/UserService'
-import {DB} from '../src/Services/DB'
-import {QueryBuilder} from '../src/Services/QueryBuilder'
-import {PostService} from '../src/Services/PostServiсe'
-import {UserRepository} from '../src/Repositories/UserRepository'
-import {PostRepository} from '../src/Repositories/PostRepository'
-import {User} from '../src/Models/User'
-import {Post} from '../src/Models/Post'
+import { UserService } from '../src/Services/UserService'
+import { DB } from '../src/Services/DB'
+import { QueryBuilder } from '../src/Services/QueryBuilder'
+import { PostService } from '../src/Services/PostService'
+import { UserRepository } from '../src/Repositories/UserRepository'
+import { PostRepository } from '../src/Repositories/PostRepository'
+import { User } from '../src/Models/User'
+import { Post } from '../src/Models/Post'
 
 
 function getRandomInt(max: number): number {
@@ -283,9 +283,9 @@ async function testPostIndex(): Promise<void> {
 }
 
 async function testPostShow(): Promise<void> {
-    const post = await postService.show(3);
+    const post = await postService.show(2);
 
-    if (post instanceof Post && post.getAttrValue('id') === 3) {
+    if (post instanceof Post && post.getAttrValue('id') === 2) {
         console.log('Post show test - PASSED');
         return;
     }
