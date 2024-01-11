@@ -5,6 +5,7 @@ import { PostRepository } from './Repositories/PostRepository'
 import { UserService } from './Services/UserService'
 import { PostService } from './Services/PostService'
 import { UsersController } from './Controllers/UsersController'
+import { HomeController } from './Controllers/HomeController'
 
 export class Container {
     private static readonly appClasses: Record<string, any> = {
@@ -14,7 +15,8 @@ export class Container {
         [PostRepository.name]: PostRepository,
         [UserService.name]: UserService,
         [PostService.name]: PostService,
-        [UsersController.name]: UsersController
+        [UsersController.name]: UsersController,
+        [HomeController.name]: HomeController,
     };
 
     private static instances: { [key: string]: any } = {};

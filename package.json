@@ -6,13 +6,14 @@
   "scripts": {
     "script": "ts-node",
     "tests": "ts-node tests/test.ts",
-    "app": "ts-node app.ts"
+    "app": "nodemon app.ts"
   },
   "author": "Vlad Shevchenko",
   "license": "MIT",
   "dependencies": {
     "@types/mysql": "^2.15.21",
     "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
     "mysql": "^2.18.1"
   },
   "devDependencies": {
