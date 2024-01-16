@@ -5,6 +5,7 @@ import { PostRepository } from './Repositories/PostRepository'
 import { UserService } from './Services/UserService'
 import { PostService } from './Services/PostService'
 import { UsersController } from './Controllers/UsersController'
+import { PostsController } from './Controllers/PostsController'
 import { HomeController } from './Controllers/HomeController'
 
 export class Container {
@@ -16,6 +17,7 @@ export class Container {
         [UserService.name]: UserService,
         [PostService.name]: PostService,
         [UsersController.name]: UsersController,
+        [PostsController.name]: PostsController,
         [HomeController.name]: HomeController,
     };
 

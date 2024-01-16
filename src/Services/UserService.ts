@@ -80,7 +80,6 @@ export class UserService {
     }
 
     private async validateUserData(data: Record<string, any>, id: number | null = null): Promise<void> {
-        Validator.checkRequiredFields(data, User.requiredFields);
         let emailDuplicates, phoneDuplicates;
 
         try {

@@ -1,5 +1,4 @@
 import { Post } from '../Models/Post'
-import { Validator } from './Validator'
 import { ModelSetter } from './ModelSetter'
 import { PostRepository } from '../Repositories/PostRepository'
 
@@ -35,7 +34,6 @@ export class PostService {
     }
 
     public async store(data: Record<string, any>): Promise<Post> {
-        Validator.checkRequiredFields(data, Post.requiredFields);
         let postId;
 
         try {
@@ -49,7 +47,6 @@ export class PostService {
 
     public async update(id: number, data: Record<string, any>): Promise<Post> {
         await this.show(id);
-        Validator.checkRequiredFields(data, Post.requiredFields);
 
         try {
             await this.postRepo.update(id, data);
