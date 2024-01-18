@@ -1,5 +1,4 @@
 import { User } from '../Models/User'
-import { Validator } from './Validator'
 import { ModelSetter } from './ModelSetter'
 import { UserRepository } from '../Repositories/UserRepository'
 

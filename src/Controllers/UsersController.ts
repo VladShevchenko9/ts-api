@@ -2,9 +2,8 @@ import { Request, Response, Router } from 'express'
 import { UserService } from '../Services/UserService'
 import { AbstractController } from './AbstractController'
 import asyncHandler from 'express-async-handler'
-import { Validator } from '../Services/Validator'
+import { UserRequest } from '../Requests/UserRequest'
 import { User } from '../Models/User'
-import { TypeCaster } from '../Services/TypeCaster'
 
 export class UsersController extends AbstractController {
     private userService: UserService;
@@ -45,16 +44,11 @@ export class UsersController extends AbstractController {
 
     private createUser = asyncHandler(async (req: Request, res: Response): Promise<void> => {
         let user;
-        let data = {
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            email: req.body.email,
-            phone_number: req.body.phone_number
-        }
+        const request = new UserRequest();
+        const data = request.getRequestData(User.requiredFields, req);
 
         try {
-            Validator.checkRequiredFields(data, User.requiredFields);
-            TypeCaster.objValuesToString(data);
+            request.validate(data);
             user = await this.userService.store(data);
         } catch (e) {
             this.errorResponse(res, 400, e.message);
@@ -67,16 +61,11 @@ export class UsersController extends AbstractController {
     private updateUser = asyncHandler(async (req: Request, res: Response): Promise<void> => {
         const userId = parseInt(req.params.id);
         let user;
-        let data = {
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            email: req.body.email,
-            phone_number: req.body.phone_number
-        }
+        const request = new UserRequest();
+        const data = request.getRequestData(User.requiredFields, req);
 
         try {
-            Validator.checkRequiredFields(data, User.requiredFields);
-            TypeCaster.objValuesToString(data);
+            request.validate(data);
             user = await this.userService.update(userId, data);
         } catch (e) {
             this.errorResponse(res, 400, e.message);

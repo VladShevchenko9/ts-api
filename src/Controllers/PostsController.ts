@@ -2,9 +2,8 @@ import { Request, Response, Router } from 'express'
 import { PostService } from '../Services/PostService'
 import { AbstractController } from './AbstractController'
 import asyncHandler from 'express-async-handler'
-import { Validator } from '../Services/Validator'
+import { PostRequest } from '../Requests/PostRequest'
 import { Post } from '../Models/Post'
-import { TypeCaster } from '../Services/TypeCaster'
 
 export class PostsController extends AbstractController {
     private postService: PostService;
@@ -45,14 +44,11 @@ export class PostsController extends AbstractController {
 
     private createPost = asyncHandler(async (req: Request, res: Response): Promise<void> => {
         let post;
-        let data = {
-            title: req.body.title,
-            content: req.body.content,
-        }
+        const request = new PostRequest();
+        const data = request.getRequestData(Post.requiredFields, req);
 
         try {
-            Validator.checkRequiredFields(data, Post.requiredFields);
-            TypeCaster.objValuesToString(data);
+            request.validate(data);
             post = await this.postService.store(data);
         } catch (e) {
             this.errorResponse(res, 400, e.message);
@@ -65,14 +61,11 @@ export class PostsController extends AbstractController {
     private updatePost = asyncHandler(async (req: Request, res: Response): Promise<void> => {
         const postId = parseInt(req.params.id);
         let post;
-        let data = {
-            title: req.body.title,
-            content: req.body.content,
-        }
+        const request = new PostRequest();
+        const data = request.getRequestData(Post.requiredFields, req);
 
         try {
-            Validator.checkRequiredFields(data, Post.requiredFields);
-            TypeCaster.objValuesToString(data);
+            request.validate(data);
             post = await this.postService.update(postId, data);
         } catch (e) {
             this.errorResponse(res, 400, e.message);
