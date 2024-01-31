@@ -1,8 +1,9 @@
 import { User } from '../Models/User'
 import { ModelSetter } from './ModelSetter'
 import { UserRepository } from '../Repositories/UserRepository'
+import { CrudServiceInterface } from './CrudServiceInterface'
 
-export class UserService {
+export class UserService implements CrudServiceInterface {
     private userRepo: UserRepository;
 
     constructor(userRepo: UserRepository) {
@@ -53,7 +54,7 @@ export class UserService {
         return ModelSetter.setModelData(user, new User()) as User;
     }
 
-    public async update(id: number, data: Record<string, string>): Promise<User> {
+    public async update(id: number, data: Record<string, any>): Promise<User> {
         await this.show(id);
         await this.validateUserData(data, id);
 

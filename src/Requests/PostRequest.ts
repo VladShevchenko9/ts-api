@@ -1,8 +1,18 @@
+import {
+    Length,
+    IsString,
+    IsDefined,
+} from 'class-validator'
 import { AbstractRequest } from './AbstractRequest'
 
 export class PostRequest extends AbstractRequest {
-    protected rules: Record<string, string> = {
-        'title': 'required|string|max:255',
-        'content': 'required|string|max:255',
-    };
+    @IsDefined()
+    @IsString()
+    @Length(3, 255)
+    title: string | null = null;
+
+    @IsDefined()
+    @IsString()
+    @Length(3, 255)
+    content: string | null = null;
 }

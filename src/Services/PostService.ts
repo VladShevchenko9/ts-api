@@ -1,8 +1,9 @@
 import { Post } from '../Models/Post'
 import { ModelSetter } from './ModelSetter'
 import { PostRepository } from '../Repositories/PostRepository'
+import { CrudServiceInterface } from './CrudServiceInterface'
 
-export class PostService {
+export class PostService implements CrudServiceInterface {
     private postRepo: PostRepository;
 
     constructor(postRepo: PostRepository) {

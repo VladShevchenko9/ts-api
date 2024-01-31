@@ -1,10 +1,28 @@
+import {
+    Length,
+    IsString,
+    IsDefined,
+    IsEmail,
+    IsMobilePhone,
+} from 'class-validator'
 import { AbstractRequest } from './AbstractRequest'
 
 export class UserRequest extends AbstractRequest {
-    protected rules: Record<string, string> = {
-        'first_name': 'required|string|min:3|max:255',
-        'last_name': 'required|string|min:3|max:255',
-        'email': 'required|email|max:255',
-        'phone_number': 'required|string|max:255',
-    };
+    @IsDefined()
+    @IsString()
+    @Length(3, 255)
+    first_name: string | null = null;
+
+    @IsDefined()
+    @IsString()
+    @Length(3, 255)
+    last_name: string | null = null;
+
+    @IsDefined()
+    @IsEmail()
+    email: string | null = null;
+
+    @IsDefined()
+    @IsMobilePhone('uk-UA')
+    phone_number: string | null = null;
 }
