@@ -10,11 +10,11 @@ export class UserService implements CrudServiceInterface {
         this.userRepo = userRepo;
     }
 
-    public async index(): Promise<User[]> {
+    public async index(page: number = 1): Promise<User[]> {
         let users = [];
 
         try {
-            users = await this.userRepo.getAll();
+            users = await this.userRepo.getAll(page);
         } catch (e) {
             throw new Error('Unable to retrieve user data');
         }

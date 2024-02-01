@@ -133,8 +133,15 @@ export class QueryBuilder {
     }
 
     public limit(n: number): this {
-        this.validateMethodCall(this.limit.name, []);
+        this.validateMethodCall(this.limit.name, [this.offset.name]);
         this._sql += ' LIMIT ' + n;
+
+        return this;
+    }
+
+    public offset(n: number): this {
+        this.validateMethodCall(this.offset.name, []);
+        this._sql += ' OFFSET ' + n;
 
         return this;
     }

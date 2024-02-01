@@ -4,14 +4,17 @@ import { QueryBuilder } from '../Services/QueryBuilder'
 export abstract class AbstractRepository {
     protected db: DB;
     protected qb: QueryBuilder;
+    readonly recordsPerPage: number = 5;
 
     constructor(db: DB, qb: QueryBuilder,) {
         this.db = db;
         this.qb = qb;
     }
 
-    public async getAll(): Promise<Record<string, any>[]> {
-        const sql = this.qb.select().from(this.table).sql;
+    public async getAll(page: number = 1): Promise<Record<string, any>[]> {
+        const offset = (page - 1) * this.recordsPerPage
+
+        const sql = this.qb.select().from(this.table).limit(this.recordsPerPage).offset(offset).sql;
         return await this.db.executeQuery(sql) || [];
     }
 

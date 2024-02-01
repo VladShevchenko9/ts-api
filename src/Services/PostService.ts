@@ -10,11 +10,11 @@ export class PostService implements CrudServiceInterface {
         this.postRepo = postRepo;
     }
 
-    public async index(): Promise<Post[]> {
+    public async index(page: number): Promise<Post[]> {
         let posts;
 
         try {
-            posts = await this.postRepo.getAll();
+            posts = await this.postRepo.getAll(page);
         } catch (e) {
             throw new Error('Unable to retrieve post data');
         }

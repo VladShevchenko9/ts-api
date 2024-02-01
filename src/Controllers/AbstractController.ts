@@ -4,6 +4,7 @@ import { Request } from 'express'
 import asyncHandler from 'express-async-handler'
 import { validateOrReject } from 'class-validator'
 import { AbstractRequest } from '../Requests/AbstractRequest'
+import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
 
 export abstract class AbstractController {
     public router: Router;
@@ -17,7 +18,17 @@ export abstract class AbstractController {
     }
 
     protected getAllModels = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-        const models = (await this.service.index()).map(model => model.toJson());
+        const queryData = new CommonIndexRequest();
+        queryData.page = parseInt(req.query.page.toString());
+
+        try {
+            await validateOrReject(queryData);
+        } catch (errors) {
+            this.errorResponse(res, 400, 'Invalid query params');
+            return;
+        }
+
+        const models = (await this.service.index(queryData.page)).map(model => model.toJson());
         this.okResponse(res, models);
     });
 
