@@ -1,10 +1,11 @@
-import { Response, Router } from 'express'
+import { Response, Router, Request } from 'express'
 import { CrudServiceInterface } from '../Services/CrudServiceInterface'
-import { Request } from 'express'
 import asyncHandler from 'express-async-handler'
 import { validateOrReject } from 'class-validator'
 import { AbstractRequest } from '../Requests/AbstractRequest'
 import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
+import { AbstractFilter } from '../Requests/Filters/AbstractFilter'
+import { CommonQuery } from '../Structures/CommonQuery'
 
 export abstract class AbstractController {
     public router: Router;
@@ -18,16 +19,23 @@ export abstract class AbstractController {
     }
 
     protected getAllModels = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-        const queryData = new CommonIndexRequest(Number(req.query.page), Number(req.query.limit));
+        const filter = this.getFilterData();
+        filter.populateData(JSON.parse(String(req.query.filter)))
+        const indexRequest = new CommonIndexRequest(Number(req.query.page), Number(req.query.limit), filter);
 
         try {
-            await validateOrReject(queryData);
+            await validateOrReject(indexRequest);
         } catch (errors) {
             this.errorResponse(res, 400, 'Invalid query params');
             return;
         }
 
-        const models = (await this.service.index(queryData.page, queryData.limit)).map(model => model.toJson());
+        const queryData = new CommonQuery();
+        queryData.page = indexRequest.page;
+        queryData.limit = indexRequest.limit;
+        queryData.filter = indexRequest.filter;
+
+        const models = (await this.service.index(queryData)).map(model => model.toJson());
         this.okResponse(res, models);
     });
 
@@ -48,7 +56,7 @@ export abstract class AbstractController {
     protected createModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
         let model;
         this.request.refresh();
-        this.request.populateData(req);
+        this.request.populateData(req.body);
 
         try {
             await validateOrReject(this.request);
@@ -71,7 +79,7 @@ export abstract class AbstractController {
         const modelId = parseInt(req.params.id);
         let model;
         this.request.refresh();
-        this.request.populateData(req);
+        this.request.populateData(req.body);
 
         try {
             await validateOrReject(this.request);
@@ -112,4 +120,5 @@ export abstract class AbstractController {
     }
 
     public abstract intializeRoutes(): void;
+    protected abstract getFilterData(): AbstractFilter;
 }

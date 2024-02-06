@@ -1,7 +1,8 @@
 import { AbstractModel } from '../Models/AbstractModel'
+import { CommonQuery } from '../Structures/CommonQuery'
 
 export interface CrudServiceInterface {
-    index(page?: number, limit?: number): Promise<AbstractModel[]>;
+    index(queryData: CommonQuery): Promise<AbstractModel[]>;
 
     show(id: number): Promise<AbstractModel>;
 

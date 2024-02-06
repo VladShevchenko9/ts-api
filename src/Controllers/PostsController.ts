@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { PostService } from '../Services/PostService'
 import { AbstractController } from './AbstractController'
 import { PostRequest } from '../Requests/PostRequest'
+import { PostFilter } from '../Requests/Filters/PostFilter'
 
 export class PostsController extends AbstractController {
     public router: Router;
@@ -17,5 +18,9 @@ export class PostsController extends AbstractController {
         this.router.get('/posts/:id', this.getModel);
         this.router.put('/posts/:id', this.updateModel);
         this.router.delete('/posts/:id', this.deleteModel);
+    }
+
+    protected getFilterData(): PostFilter {
+        return new PostFilter()
     }
 }

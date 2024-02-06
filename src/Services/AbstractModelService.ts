@@ -1,7 +1,7 @@
 import { AbstractRepository } from '../Repositories/AbstractRepository'
 import { CrudServiceInterface } from './CrudServiceInterface'
-import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
 import { AbstractModel } from '../Models/AbstractModel'
+import { CommonQuery } from '../Structures/CommonQuery'
 
 export abstract class AbstractModelService implements CrudServiceInterface {
     protected repository: AbstractRepository;
@@ -11,13 +11,12 @@ export abstract class AbstractModelService implements CrudServiceInterface {
     }
 
     public async index(
-        page: number = CommonIndexRequest.defaultPage,
-        limit: number = CommonIndexRequest.defaultLimit
+        queryData: CommonQuery
     ): Promise<AbstractModel[]> {
         let models = [];
 
         try {
-            models = await this.repository.getAll(page, limit);
+            models = await this.repository.getAll(queryData);
         } catch (e) {
             throw new Error('Unable to retrieve model data');
         }

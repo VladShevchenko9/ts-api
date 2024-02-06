@@ -1,10 +1,8 @@
-import { Request } from 'express'
-
 export abstract class AbstractRequest {
-    public populateData(req: Request): void {
+    public populateData(data: Record<string, any>): void {
         const context = this;
         Object.keys(context).map(property => {
-            context[property] = req.body[property];
+            context[property] = data[property];
         });
     }
 
