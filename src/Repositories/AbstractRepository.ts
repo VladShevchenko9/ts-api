@@ -1,20 +1,20 @@
+import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
 import { DB } from '../Services/DB'
 import { QueryBuilder } from '../Services/QueryBuilder'
 
 export abstract class AbstractRepository {
     protected db: DB;
     protected qb: QueryBuilder;
-    readonly recordsPerPage: number = 5;
 
     constructor(db: DB, qb: QueryBuilder,) {
         this.db = db;
         this.qb = qb;
     }
 
-    public async getAll(page: number = 1): Promise<Record<string, any>[]> {
-        const offset = (page - 1) * this.recordsPerPage
+    public async getAll(page: number = CommonIndexRequest.defaultPage, limit: number = CommonIndexRequest.defaultLimit): Promise<Record<string, any>[]> {
+        const offset = (page - 1) * limit
 
-        const sql = this.qb.select().from(this.table).limit(this.recordsPerPage).offset(offset).sql;
+        const sql = this.qb.select().from(this.table).limit(limit).offset(offset).sql;
         return await this.db.executeQuery(sql) || [];
     }
 

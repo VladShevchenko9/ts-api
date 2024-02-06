@@ -1,7 +1,7 @@
 import { AbstractModel } from '../Models/AbstractModel'
 
 export interface CrudServiceInterface {
-    index(page?: number): Promise<AbstractModel[]>;
+    index(page?: number, limit?: number): Promise<AbstractModel[]>;
 
     show(id: number): Promise<AbstractModel>;
 

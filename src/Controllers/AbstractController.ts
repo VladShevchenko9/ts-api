@@ -18,8 +18,7 @@ export abstract class AbstractController {
     }
 
     protected getAllModels = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-        const queryData = new CommonIndexRequest();
-        queryData.page = parseInt(req.query.page.toString());
+        const queryData = new CommonIndexRequest(Number(req.query.page), Number(req.query.limit));
 
         try {
             await validateOrReject(queryData);
@@ -28,7 +27,7 @@ export abstract class AbstractController {
             return;
         }
 
-        const models = (await this.service.index(queryData.page)).map(model => model.toJson());
+        const models = (await this.service.index(queryData.page, queryData.limit)).map(model => model.toJson());
         this.okResponse(res, models);
     });
 
