@@ -1,7 +1,7 @@
 import { AbstractRepository } from '../Repositories/AbstractRepository'
 import { CrudServiceInterface } from './CrudServiceInterface'
 import { AbstractModel } from '../Models/AbstractModel'
-import { CommonQuery } from '../Structures/CommonQuery'
+import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
 
 export abstract class AbstractModelService implements CrudServiceInterface {
     protected repository: AbstractRepository;
@@ -10,9 +10,7 @@ export abstract class AbstractModelService implements CrudServiceInterface {
         this.repository = modelRepo;
     }
 
-    public async index(
-        queryData: CommonQuery
-    ): Promise<AbstractModel[]> {
+    public async index(queryData: CommonIndexRequest): Promise<AbstractModel[]> {
         let models = [];
 
         try {

@@ -5,7 +5,8 @@ import { validateOrReject } from 'class-validator'
 import { AbstractRequest } from '../Requests/AbstractRequest'
 import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
 import { AbstractFilter } from '../Requests/Filters/AbstractFilter'
-import { CommonQuery } from '../Structures/CommonQuery'
+import { FilterRequest } from '../Requests/FilterRequest'
+import { TypeCaster } from '../Services/TypeCaster'
 
 export abstract class AbstractController {
     public router: Router;
@@ -19,8 +20,17 @@ export abstract class AbstractController {
     }
 
     protected getAllModels = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+        const filterRequest = new FilterRequest(TypeCaster.toStringOfUndefined(req.query.filter));
+
+        try {
+            await validateOrReject(filterRequest);
+        } catch (errors) {
+            this.errorResponse(res, 400, 'Invalid filter parameter');
+            return;
+        }
+
         const filter = this.getFilterData();
-        filter.populateData(JSON.parse(String(req.query.filter)))
+        filter.populateData(filterRequest.filter);
         const indexRequest = new CommonIndexRequest(Number(req.query.page), Number(req.query.limit), filter);
 
         try {
@@ -30,7 +40,7 @@ export abstract class AbstractController {
             return;
         }
 
-        const queryData = new CommonQuery();
+        const queryData = new CommonIndexRequest(indexRequest.page, indexRequest.limit, indexRequest.filter);
         queryData.page = indexRequest.page;
         queryData.limit = indexRequest.limit;
         queryData.filter = indexRequest.filter;

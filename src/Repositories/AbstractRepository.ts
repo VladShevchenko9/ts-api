@@ -1,6 +1,6 @@
+import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
 import { DB } from '../Services/DB'
 import { QueryBuilder } from '../Services/QueryBuilder'
-import { CommonQuery } from '../Structures/CommonQuery'
 
 export abstract class AbstractRepository {
     protected db: DB;
@@ -11,7 +11,7 @@ export abstract class AbstractRepository {
         this.qb = qb;
     }
 
-    public async getAll(queryData: CommonQuery): Promise<Record<string, any>[]> {
+    public async getAll(queryData: CommonIndexRequest): Promise<Record<string, any>[]> {
         const offset = (queryData.page - 1) * queryData.limit;
         const builder = this.qb.select().from(this.table);
         const filterData = queryData.filter.toRecord();
