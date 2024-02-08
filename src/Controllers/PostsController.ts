@@ -3,6 +3,8 @@ import { PostService } from '../Services/PostService'
 import { AbstractController } from './AbstractController'
 import { PostRequest } from '../Requests/PostRequest'
 import { PostFilter } from '../Requests/Filters/PostFilter'
+import { PostTransformer } from '../ResponseTransformers/PostTransformer'
+import { Container } from '../Container'
 
 export class PostsController extends AbstractController {
     public router: Router;
@@ -22,5 +24,9 @@ export class PostsController extends AbstractController {
 
     protected getFilterData(): PostFilter {
         return new PostFilter()
+    }
+
+    protected getTransformer(): PostTransformer {
+        return Container.createInstance<PostTransformer>(PostTransformer.name);
     }
 }

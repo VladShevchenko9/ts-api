@@ -7,6 +7,8 @@ import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
 import { AbstractFilter } from '../Requests/Filters/AbstractFilter'
 import { FilterRequest } from '../Requests/FilterRequest'
 import { TypeCaster } from '../Services/TypeCaster'
+import { AbstractTransformer } from '../ResponseTransformers/AbstractTransformer'
+import { AbstractModel } from '../Models/AbstractModel'
 
 export abstract class AbstractController {
     public router: Router;
@@ -45,7 +47,7 @@ export abstract class AbstractController {
         queryData.limit = indexRequest.limit;
         queryData.filter = indexRequest.filter;
 
-        const models = (await this.service.index(queryData)).map(model => model.toJson());
+        const models = await this.service.index(queryData);
         this.okResponse(res, models);
     });
 
@@ -60,7 +62,7 @@ export abstract class AbstractController {
             return;
         }
 
-        this.okResponse(res, model.toJson());
+        this.okResponse(res, model);
     });
 
     protected createModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -82,7 +84,7 @@ export abstract class AbstractController {
             return;
         }
 
-        this.okResponse(res, model.toJson());
+        this.okResponse(res, model);
     });
 
     protected updateModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -105,7 +107,7 @@ export abstract class AbstractController {
             return;
         }
 
-        this.okResponse(res, model.toJson());
+        this.okResponse(res, model);
     });
 
     protected deleteModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -118,17 +120,25 @@ export abstract class AbstractController {
             return;
         }
 
-        this.okResponse(res, { success: true });
+        this.okResponse(res);
     });
 
     protected errorResponse(res: Response, code: number, message: string): void {
         res.status(code).send(message);
     }
 
-    protected okResponse(res: Response, data: Record<string, any> | Record<string, any>[] | string): void {
-        res.status(200).send(data);
+    protected okResponse(res: Response, data: AbstractModel | AbstractModel[] | null = null): void {
+        if (!data) {
+            res.status(200).send({ success: true });
+            return;
+        }
+
+        const transformer = this.getTransformer();
+        const transformedData = transformer.transform(data);
+        res.status(200).send(transformedData);
     }
 
     public abstract intializeRoutes(): void;
     protected abstract getFilterData(): AbstractFilter;
+    protected abstract getTransformer(): AbstractTransformer;
 }

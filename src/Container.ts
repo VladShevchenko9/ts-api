@@ -8,6 +8,8 @@ import { UsersController } from './Controllers/UsersController'
 import { PostsController } from './Controllers/PostsController'
 import { UserRequest } from './Requests/UserRequest'
 import { PostRequest } from './Requests/PostRequest'
+import { UserTransformer } from './ResponseTransformers/UserTransformer'
+import { PostTransformer } from './ResponseTransformers/PostTransformer'
 
 export class Container {
     private static readonly appClasses: Record<string, any> = {
@@ -21,6 +23,8 @@ export class Container {
         [PostsController.name]: PostsController,
         [UserRequest.name]: UserRequest,
         [PostRequest.name]: PostRequest,
+        [UserTransformer.name]: UserTransformer,
+        [PostTransformer.name]: PostTransformer,
     };
 
     private static instances: { [key: string]: any } = {};

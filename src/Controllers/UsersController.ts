@@ -3,6 +3,8 @@ import { UserService } from '../Services/UserService'
 import { AbstractController } from './AbstractController'
 import { UserRequest } from '../Requests/UserRequest'
 import { UserFilter } from '../Requests/Filters/UserFilter'
+import { UserTransformer } from '../ResponseTransformers/UserTransformer'
+import { Container } from '../Container'
 
 export class UsersController extends AbstractController {
     public router: Router;
@@ -22,5 +24,9 @@ export class UsersController extends AbstractController {
 
     protected getFilterData(): UserFilter {
         return new UserFilter();
+    }
+
+    protected getTransformer(): UserTransformer {
+        return Container.createInstance<UserTransformer>(UserTransformer.name);
     }
 }
