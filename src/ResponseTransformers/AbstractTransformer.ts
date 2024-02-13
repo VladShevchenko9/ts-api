@@ -6,6 +6,10 @@ export abstract class AbstractTransformer {
             return modelData.map(model => this.transform(model));
         }
 
+        return this.transformSingleRecord(modelData);
+    }
+
+    protected transformSingleRecord(modelData: AbstractModel): Record<string, any> {
         return modelData.toJson();
     }
 }
