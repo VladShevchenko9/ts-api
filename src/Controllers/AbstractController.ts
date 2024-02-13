@@ -48,7 +48,7 @@ export abstract class AbstractController {
         queryData.filter = indexRequest.filter;
 
         const models = await this.service.index(queryData);
-        this.okResponse(res, models);
+        await this.okResponse(res, models);
     });
 
     protected getModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -62,7 +62,7 @@ export abstract class AbstractController {
             return;
         }
 
-        this.okResponse(res, model);
+        await this.okResponse(res, model);
     });
 
     protected createModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -84,7 +84,7 @@ export abstract class AbstractController {
             return;
         }
 
-        this.okResponse(res, model);
+        await this.okResponse(res, model);
     });
 
     protected updateModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -107,7 +107,7 @@ export abstract class AbstractController {
             return;
         }
 
-        this.okResponse(res, model);
+        await this.okResponse(res, model);
     });
 
     protected deleteModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -120,21 +120,21 @@ export abstract class AbstractController {
             return;
         }
 
-        this.okResponse(res);
+        await this.okResponse(res);
     });
 
     protected errorResponse(res: Response, code: number, message: string): void {
         res.status(code).send(message);
     }
 
-    protected okResponse(res: Response, data: AbstractModel | AbstractModel[] | null = null): void {
+    protected async okResponse(res: Response, data: AbstractModel | AbstractModel[] | null = null): Promise<void> {
         if (!data) {
             res.status(200).send({ success: true });
             return;
         }
 
         const transformer = this.getTransformer();
-        const transformedData = transformer.transform(data);
+        const transformedData = await transformer.transform(data);
         res.status(200).send(transformedData);
     }
 
