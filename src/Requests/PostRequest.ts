@@ -2,6 +2,7 @@ import {
     Length,
     IsString,
     IsDefined,
+    IsNumber,
 } from 'class-validator'
 import { AbstractRequest } from './AbstractRequest'
 
@@ -15,4 +16,8 @@ export class PostRequest extends AbstractRequest {
     @IsString()
     @Length(3, 255)
     content: string | null = null;
+
+    @IsDefined()
+    @IsNumber()
+    user_id: number | null = null;
 }

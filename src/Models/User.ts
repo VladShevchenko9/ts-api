@@ -9,5 +9,4 @@ export class User extends AbstractModel {
         phone_number: '',
     };
     protected static _table: string = 'user';
-    protected static _requiredFields: string[] = ['first_name', 'last_name', 'email', 'phone_number'];
 }

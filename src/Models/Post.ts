@@ -5,7 +5,7 @@ export class Post extends AbstractModel {
         id: 0,
         title: '',
         content: '',
+        user_id: 0,
     };
     protected static _table: string = 'post';
-    protected static _requiredFields: string[] = ['title', 'content'];
 }

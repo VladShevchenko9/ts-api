@@ -71,8 +71,7 @@ export abstract class AbstractModelService implements CrudServiceInterface {
         return true;
     }
 
-    protected validateModelData(data: Record<string, any>, id?: number): Promise<void> {
-        return new Promise(() => { });
-    }
+    protected abstract validateModelData(data: Record<string, any>, id?: number): Promise<void>;
+
     protected abstract makeModel(record: Record<string, any>): AbstractModel;
 }

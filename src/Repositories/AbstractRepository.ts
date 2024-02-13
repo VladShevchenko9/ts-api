@@ -11,6 +11,29 @@ export abstract class AbstractRepository {
         this.qb = qb;
     }
 
+    public async countBy(
+        property: string,
+        value: string | number,
+        exceptionId: number | null = null,
+        table: string = this.table,
+    ): Promise<number> {
+        const queryBuilder = this.qb.select('COUNT(id) AS total')
+            .from(table)
+            .where(property, '=', value);
+
+        if (typeof exceptionId === 'number') {
+            queryBuilder.andWhere('id', '!=', exceptionId);
+        }
+
+        const totalData = await this.db.getRow(queryBuilder.sql);
+
+        if (totalData.hasOwnProperty('total') && typeof totalData.total === 'number') {
+            return totalData.total;
+        }
+
+        throw new Error('Can`t count total records');
+    }
+
     public async getAll(queryData: CommonIndexRequest): Promise<Record<string, any>[]> {
         const offset = (queryData.page - 1) * queryData.limit;
         const builder = this.qb.select().from(this.table);

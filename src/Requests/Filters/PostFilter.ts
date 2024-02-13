@@ -1,4 +1,5 @@
 import {
+    IsNumber,
     IsOptional, IsString, Length,
 } from 'class-validator'
 import { AbstractFilter } from './AbstractFilter'
@@ -14,4 +15,8 @@ export class PostFilter extends AbstractFilter {
     @IsString()
     @Length(3, 255)
     content: string | null = null;
+
+    @IsOptional()
+    @IsNumber()
+    user_id: number | null = null;
 }

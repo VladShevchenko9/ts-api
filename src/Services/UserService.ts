@@ -15,8 +15,8 @@ export class UserService extends AbstractModelService implements CrudServiceInte
         let emailDuplicates, phoneDuplicates;
 
         try {
-            emailDuplicates = await this.repository.countDuplicatesBy('email', data.email, id);
-            phoneDuplicates = await this.repository.countDuplicatesBy('phone_number', data.phone_number, id);
+            emailDuplicates = await this.repository.countBy('email', data.email, id);
+            phoneDuplicates = await this.repository.countBy('phone_number', data.phone_number, id);
         } catch (e) {
             throw new Error('Unable to validate user data');
         }

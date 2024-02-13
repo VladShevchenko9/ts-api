@@ -1,7 +1,6 @@
 export abstract class AbstractModel {
     protected attributes: Record<string, any> = {};
     protected static _table: string = '';
-    protected static _requiredFields: string[] = [];
 
     public getAttrValue(attrName: string): any {
         if (this.attributes.hasOwnProperty(attrName)) {
@@ -25,10 +24,6 @@ export abstract class AbstractModel {
 
     public static get table(): string {
         return this._table;
-    }
-
-    public static get requiredFields(): string[] {
-        return this._requiredFields;
     }
 
     public toJson(): Record<string, any> {
