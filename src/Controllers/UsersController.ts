@@ -5,6 +5,7 @@ import { UserRequest } from '../Requests/UserRequest'
 import { UserFilter } from '../Requests/Filters/UserFilter'
 import { UserTransformer } from '../ResponseTransformers/UserTransformer'
 import { Container } from '../Container'
+import { PostRepository } from '../Repositories/PostRepository'
 
 export class UsersController extends AbstractController {
     public router: Router;
@@ -27,6 +28,7 @@ export class UsersController extends AbstractController {
     }
 
     protected getTransformer(): UserTransformer {
-        return Container.createInstance<UserTransformer>(UserTransformer.name);
+        const postRepository = Container.createInstance<PostRepository>(PostRepository.name);
+        return Container.createInstance<UserTransformer>(UserTransformer.name, postRepository);
     }
 }

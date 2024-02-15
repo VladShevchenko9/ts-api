@@ -6,12 +6,9 @@ import { PostFilter } from '../Requests/Filters/PostFilter'
 import { PostTransformer } from '../ResponseTransformers/PostTransformer'
 import { Container } from '../Container'
 import { UserRepository } from '../Repositories/UserRepository'
-import { DB } from '../Services/DB'
-import { QueryBuilder } from '../Services/QueryBuilder'
 
 export class PostsController extends AbstractController {
     public router: Router;
-
 
     constructor(postService: PostService, router: Router, request: PostRequest) {
         super(postService, router, request);
@@ -27,13 +24,11 @@ export class PostsController extends AbstractController {
     }
 
     protected getFilterData(): PostFilter {
-        return new PostFilter()
+        return new PostFilter();
     }
 
     protected getTransformer(): PostTransformer {
-        const db = Container.createInstance<DB>(DB.name);
-        const qb = Container.createInstance<QueryBuilder>(QueryBuilder.name);
-        const userRepository = Container.createInstance<UserRepository>(UserRepository.name, db, qb);
+        const userRepository = Container.createInstance<UserRepository>(UserRepository.name);
         return Container.createInstance<PostTransformer>(PostTransformer.name, userRepository);
     }
 }
