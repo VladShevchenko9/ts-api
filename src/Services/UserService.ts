@@ -3,6 +3,7 @@ import { ModelSetter } from './ModelSetter'
 import { UserRepository } from '../Repositories/UserRepository'
 import { CrudServiceInterface } from './CrudServiceInterface'
 import { AbstractModelService } from './AbstractModelService'
+import bcrypt from 'bcrypt'
 
 export class UserService extends AbstractModelService implements CrudServiceInterface {
     protected repository: UserRepository;
@@ -11,7 +12,7 @@ export class UserService extends AbstractModelService implements CrudServiceInte
         super(userRepo);
     }
 
-    protected async validateModelData(data: Record<string, any>, id: number | null = null): Promise<void> {
+    protected async validateModelData(data: Record<string, any>, id: number | null = null): Promise<Record<string, any>> {
         let emailDuplicates, phoneDuplicates;
 
         try {
@@ -28,6 +29,13 @@ export class UserService extends AbstractModelService implements CrudServiceInte
         if (phoneDuplicates > 0) {
             throw new Error('User with this Phone number already exists');
         }
+
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(data.password, salt);
+        data.password = hash;
+        //console.log(bcrypt.compareSync(password, hash));
+
+        return data;
     }
 
     protected makeModel(record: Record<string, any>): User {

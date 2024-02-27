@@ -35,20 +35,21 @@ export abstract class AbstractModelService implements CrudServiceInterface {
     }
 
     public async store(data: Record<string, any>): Promise<AbstractModel> {
-        await this.validateModelData(data);
+        data = await this.validateModelData(data);
         let modelId: number = 0;
 
         try {
             modelId = await this.repository.create(data);
         } catch (e) {
             throw new Error('Unable to create a model');
-        };
+        }
+
         return this.show(modelId);
     }
 
     public async update(id: number, data: Record<string, any>): Promise<AbstractModel> {
         await this.show(id);
-        await this.validateModelData(data, id);
+        data = await this.validateModelData(data, id);
 
         try {
             await this.repository.update(id, data);
@@ -71,7 +72,7 @@ export abstract class AbstractModelService implements CrudServiceInterface {
         return true;
     }
 
-    protected abstract validateModelData(data: Record<string, any>, id?: number): Promise<void>;
+    protected abstract validateModelData(data: Record<string, any>, id?: number): Promise<Record<string, any>>;
 
     protected abstract makeModel(record: Record<string, any>): AbstractModel;
 }

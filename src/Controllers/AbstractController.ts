@@ -13,12 +13,10 @@ import { AbstractModel } from '../Models/AbstractModel'
 export abstract class AbstractController {
     public router: Router;
     protected service: CrudServiceInterface;
-    protected request: AbstractRequest;
 
-    constructor(service: CrudServiceInterface, router: Router, request: AbstractRequest) {
+    constructor(service: CrudServiceInterface, router: Router) {
         this.router = router;
         this.service = service;
-        this.request = request;
     }
 
     protected getAllModels = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -67,18 +65,18 @@ export abstract class AbstractController {
 
     protected createModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
         let model;
-        this.request.refresh();
-        this.request.populateData(req.body);
+        const request = this.getCreateRequest();
+        request.populateData(req.body);
 
         try {
-            await validateOrReject(this.request);
+            await validateOrReject(request);
         } catch (errors) {
             this.errorResponse(res, 400, 'Invalid data');
             return;
         }
 
         try {
-            model = await this.service.store(this.request);
+            model = await this.service.store(request);
         } catch (e) {
             this.errorResponse(res, 422, e.message);
             return;
@@ -90,18 +88,18 @@ export abstract class AbstractController {
     protected updateModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
         const modelId = parseInt(req.params.id);
         let model;
-        this.request.refresh();
-        this.request.populateData(req.body);
+        const request = this.getUpdateRequest();
+        request.populateData(req.body);
 
         try {
-            await validateOrReject(this.request);
+            await validateOrReject(request);
         } catch (errors) {
             this.errorResponse(res, 400, 'Invalid data');
             return;
         }
 
         try {
-            model = await this.service.update(modelId, this.request);
+            model = await this.service.update(modelId, request);
         } catch (e) {
             this.errorResponse(res, 422, e.message);
             return;
@@ -141,4 +139,6 @@ export abstract class AbstractController {
     public abstract intializeRoutes(): void;
     protected abstract getFilterData(): AbstractFilter;
     protected abstract getTransformer(): AbstractTransformer;
+    protected abstract getCreateRequest(): AbstractRequest;
+    protected abstract getUpdateRequest(): AbstractRequest;
 }

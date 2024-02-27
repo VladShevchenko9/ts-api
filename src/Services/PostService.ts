@@ -16,13 +16,15 @@ export class PostService extends AbstractModelService implements CrudServiceInte
         return ModelSetter.setModelData(record, new Post()) as Post;
     };
 
-    protected async validateModelData(data: Record<string, any>, id?: number): Promise<void> {
+    protected async validateModelData(data: Record<string, any>, id?: number): Promise<Record<string, any>> {
         const userId = Number(data.user_id);
 
         const idExist = await this.repository.countBy('id', userId, null, User.table);
-        
+
         if (!idExist) {
             throw new Error(`Unable to find a user with id: ${userId}`);
         }
+
+        return data;
     }
 }

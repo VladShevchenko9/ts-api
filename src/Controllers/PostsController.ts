@@ -1,17 +1,18 @@
 import { Router } from 'express'
 import { PostService } from '../Services/PostService'
 import { AbstractController } from './AbstractController'
-import { PostRequest } from '../Requests/PostRequest'
+import { PostUpdateRequest } from '../Requests/PostUpdateRequest'
 import { PostFilter } from '../Requests/Filters/PostFilter'
 import { PostTransformer } from '../ResponseTransformers/PostTransformer'
 import { Container } from '../Container'
 import { UserRepository } from '../Repositories/UserRepository'
+import { PostCreateRequest } from '../Requests/PostCreateRequest'
 
 export class PostsController extends AbstractController {
     public router: Router;
 
-    constructor(postService: PostService, router: Router, request: PostRequest) {
-        super(postService, router, request);
+    constructor(postService: PostService, router: Router) {
+        super(postService, router);
         this.intializeRoutes();
     }
 
@@ -30,5 +31,13 @@ export class PostsController extends AbstractController {
     protected getTransformer(): PostTransformer {
         const userRepository = Container.createInstance<UserRepository>(UserRepository.name);
         return Container.createInstance<PostTransformer>(PostTransformer.name, userRepository);
+    }
+
+    protected getCreateRequest(): PostCreateRequest {
+        return new PostCreateRequest();
+    }
+
+    protected getUpdateRequest(): PostUpdateRequest {
+        return new PostUpdateRequest();
     }
 }

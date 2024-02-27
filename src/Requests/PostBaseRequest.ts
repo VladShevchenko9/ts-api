@@ -6,7 +6,7 @@ import {
 } from 'class-validator'
 import { AbstractRequest } from './AbstractRequest'
 
-export class PostRequest extends AbstractRequest {
+export class PostBaseRequest extends AbstractRequest {
     @IsDefined()
     @IsString()
     @Length(3, 255)

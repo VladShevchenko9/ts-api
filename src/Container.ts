@@ -6,8 +6,6 @@ import { UserService } from './Services/UserService'
 import { PostService } from './Services/PostService'
 import { UsersController } from './Controllers/UsersController'
 import { PostsController } from './Controllers/PostsController'
-import { UserRequest } from './Requests/UserRequest'
-import { PostRequest } from './Requests/PostRequest'
 import { UserTransformer } from './ResponseTransformers/UserTransformer'
 import { PostTransformer } from './ResponseTransformers/PostTransformer'
 
@@ -21,8 +19,6 @@ export class Container {
         [PostService.name]: PostService,
         [UsersController.name]: UsersController,
         [PostsController.name]: PostsController,
-        [UserRequest.name]: UserRequest,
-        [PostRequest.name]: PostRequest,
         [UserTransformer.name]: UserTransformer,
         [PostTransformer.name]: PostTransformer,
     };
