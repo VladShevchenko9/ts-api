@@ -12,6 +12,18 @@ export class UserService extends AbstractModelService implements CrudServiceInte
         super(userRepo);
     }
 
+    public async getUserByEmail(email: string): Promise<User> {
+        let user;
+
+        try {
+            user = await this.repository.findBy({ email: email });
+        } catch (e) {
+            throw new Error('User does not exist');
+        }
+
+        return this.makeModel(user);
+    }
+
     protected async validateModelData(data: Record<string, any>, id: number | null = null): Promise<Record<string, any>> {
         let emailDuplicates, phoneDuplicates;
 
@@ -33,7 +45,6 @@ export class UserService extends AbstractModelService implements CrudServiceInte
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(data.password, salt);
         data.password = hash;
-        //console.log(bcrypt.compareSync(password, hash));
 
         return data;
     }

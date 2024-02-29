@@ -1,5 +1,7 @@
 import express from 'express'
 import { AbstractController } from './Controllers/AbstractController'
+import session from 'express-session'
+import 'dotenv/config'
 
 export class App {
     public app: express.Application;
@@ -15,6 +17,13 @@ export class App {
 
     private initializeMiddlewares(): void {
         this.app.use(express.json());
+        const sess = {
+            secret: process.env.SESSION_SECRET,
+            cookie: {},
+            resave: false,
+            saveUninitialized: true,
+        };
+        this.app.use(session(sess));
     }
 
     private initializeControllers(controllers: AbstractController[]): void {
