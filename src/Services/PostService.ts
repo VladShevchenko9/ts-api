@@ -1,5 +1,3 @@
-import { Post } from '../Models/Post'
-import { ModelSetter } from './ModelSetter'
 import { CrudServiceInterface } from './CrudServiceInterface'
 import { AbstractModelService } from './AbstractModelService'
 import { PostRepository } from '../Repositories/PostRepository'
@@ -11,10 +9,6 @@ export class PostService extends AbstractModelService implements CrudServiceInte
     constructor(postRepo: PostRepository) {
         super(postRepo);
     }
-
-    protected makeModel(record: Record<string, any>): Post {
-        return ModelSetter.setModelData(record, new Post()) as Post;
-    };
 
     protected async validateModelData(data: Record<string, any>, id?: number): Promise<Record<string, any>> {
         const userId = Number(data.user_id);

@@ -1,3 +1,4 @@
+import { AbstractModel } from '../Models/AbstractModel'
 import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
 import { DB } from '../Services/DB'
 import { QueryBuilder } from '../Services/QueryBuilder'
@@ -34,7 +35,7 @@ export abstract class AbstractRepository {
         throw new Error('Can`t count total records');
     }
 
-    public async getAll(queryData: CommonIndexRequest): Promise<Record<string, any>[]> {
+    public async getAll(queryData: CommonIndexRequest): Promise<AbstractModel[]> {
         const offset = (queryData.page - 1) * queryData.limit;
         const builder = this.qb.select().from(this.table);
         const filterData = queryData.filter.toRecord();
@@ -47,12 +48,15 @@ export abstract class AbstractRepository {
             builder.andWhere(property, '=', queryData[property]);
         });
         const sql = builder.limit(queryData.limit).offset(offset).sql;
-        return await this.db.executeQuery(sql) || [];
+        const records = await this.db.executeQuery(sql) || [];
+
+        return records.map(data => this.makeModel(data));
     }
 
-    public async find(id: number): Promise<Record<string, any>> {
+    public async find(id: number): Promise<AbstractModel> {
         const sql = this.qb.select().from(this.table).where('id', '=', id).sql;
-        return await this.db.getRow(sql);
+        const data = await this.db.getRow(sql);
+        return this.makeModel(data);
     }
 
     public async create(data: Record<string, any>): Promise<number> {
@@ -70,7 +74,7 @@ export abstract class AbstractRepository {
         await this.db.executeQuery(sql);
     }
 
-    public async findBy(filter: Record<string, number | string>): Promise<Record<string, any>> {
+    public async findBy(filter: Record<string, number | string>): Promise<AbstractModel> {
         const queryBuilder = this.qb.select('*').from(this.table);
         const fields = Object.keys(filter);
 
@@ -83,8 +87,15 @@ export abstract class AbstractRepository {
             queryBuilder.andWhere(fields[i], '=', filter[fields[i]]);
         }
 
-        return await this.db.getRow(queryBuilder.sql);
+        const data = await this.db.getRow(queryBuilder.sql);
+        return this.makeModel(data);
+    }
+
+    protected makeModel(data: Record<string, any>): AbstractModel {
+        const modelConstructor = this.getModelClass();
+        return new modelConstructor().populateFromObject(data);
     }
 
     abstract get table(): string;
+    protected abstract getModelClass(): new () => AbstractModel;
 }

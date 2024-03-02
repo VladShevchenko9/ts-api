@@ -2,6 +2,16 @@ export abstract class AbstractModel {
     protected attributes: Record<string, any> = {};
     protected static _table: string = '';
 
+    public populateFromObject(data: Record<string, any>): AbstractModel {
+        this.getAttrList().map(attribute => {
+            if (data.hasOwnProperty(attribute)) {
+                this.setAttrValue(attribute, data[attribute]);
+            }
+        });
+
+        return this;
+    }
+
     public getAttrValue(attrName: string): any {
         if (this.attributes.hasOwnProperty(attrName)) {
             return this.attributes[attrName];

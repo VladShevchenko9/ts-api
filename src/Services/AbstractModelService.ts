@@ -19,7 +19,7 @@ export abstract class AbstractModelService implements CrudServiceInterface {
             throw new Error('Unable to retrieve model data');
         }
 
-        return models.map(record => this.makeModel(record));
+        return models;
     }
 
     public async show(id: number): Promise<AbstractModel> {
@@ -31,7 +31,7 @@ export abstract class AbstractModelService implements CrudServiceInterface {
             throw new Error('Model does not exist');
         }
 
-        return this.makeModel(model);
+        return model;
     }
 
     public async store(data: Record<string, any>): Promise<AbstractModel> {
@@ -44,7 +44,7 @@ export abstract class AbstractModelService implements CrudServiceInterface {
             throw new Error('Unable to create a model');
         }
 
-        return this.show(modelId);
+        return await this.show(modelId);
     }
 
     public async update(id: number, data: Record<string, any>): Promise<AbstractModel> {
@@ -73,6 +73,4 @@ export abstract class AbstractModelService implements CrudServiceInterface {
     }
 
     protected abstract validateModelData(data: Record<string, any>, id?: number): Promise<Record<string, any>>;
-
-    protected abstract makeModel(record: Record<string, any>): AbstractModel;
 }
