@@ -1,5 +1,4 @@
 import { User } from '../Models/User'
-import { ModelSetter } from './ModelSetter'
 import { UserRepository } from '../Repositories/UserRepository'
 import { CrudServiceInterface } from './CrudServiceInterface'
 import { AbstractModelService } from './AbstractModelService'
@@ -21,7 +20,7 @@ export class UserService extends AbstractModelService implements CrudServiceInte
             throw new Error('User does not exist');
         }
 
-        return this.makeModel(user);
+        return user;
     }
 
     protected async validateModelData(data: Record<string, any>, id: number | null = null): Promise<Record<string, any>> {
@@ -42,14 +41,12 @@ export class UserService extends AbstractModelService implements CrudServiceInte
             throw new Error('User with this Phone number already exists');
         }
 
-        const salt = bcrypt.genSaltSync(10);
-        const hash = bcrypt.hashSync(data.password, salt);
-        data.password = hash;
+        if (!id) {
+            const salt = bcrypt.genSaltSync(10);
+            const hash = bcrypt.hashSync(data.password, salt);
+            data.password = hash;
+        }
 
         return data;
     }
-
-    protected makeModel(record: Record<string, any>): User {
-        return ModelSetter.setModelData(record, new User()) as User;
-    };
 }
