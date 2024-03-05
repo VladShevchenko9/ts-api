@@ -13,6 +13,8 @@ import { validateOrReject } from 'class-validator'
 import bcrypt from 'bcrypt'
 import { SessionFunctions } from '../Services/SessionFunctions'
 import { AuthMiddleware } from '../Middleware/AuthMiddleware'
+import { UserUpdatePasswordRequest } from '../Requests/UserUpdatePasswordRequest'
+import { User } from '../Models/User'
 
 export class UsersController extends AbstractController {
     public router: Router;
@@ -27,6 +29,7 @@ export class UsersController extends AbstractController {
         this.router.use('/users', [AuthMiddleware.checkSessionUser]);
         this.router.get('/users', this.getAllModels);
         this.router.get('/users/:id', this.getModel);
+        this.router.patch('/users/update-password/:id', this.updatePassword);
         this.router.patch('/users/:id', this.updateModel);
         this.router.delete('/users/:id', this.deleteModel);
         this.router.post('/login', this.login);
@@ -49,6 +52,49 @@ export class UsersController extends AbstractController {
     protected getUpdateRequest(): UserUpdateRequest {
         return new UserUpdateRequest();
     }
+
+    protected updatePassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+        const request = new UserUpdatePasswordRequest();
+        const userId = parseInt(req.params.id);
+        let user: User;
+
+        request.oldPassword = req.body.oldPassword;
+        request.newPassword = req.body.newPassword;
+        request.confirmationPassword = req.body.confirmationPassword;
+
+        try {
+            await validateOrReject(request);
+        } catch (errors) {
+            this.errorResponse(res, 400, 'Invalid data');
+            return;
+        }
+        try {
+            user = await this.service.show(userId) as User;
+        } catch (error) {
+            this.errorResponse(res, 404, error.message);
+            return;
+        }
+        if (!bcrypt.compareSync(request.oldPassword, user.getAttrValue('password'))) {
+            this.errorResponse(res, 409, 'Invalid PASSWORD');
+            return;
+        }
+
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(request.newPassword, salt);
+
+        const data = user.toJson();
+        data.password = hash;
+        delete data.id;
+        try {
+            user = await this.service.update(userId, data) as User;
+        } catch (error) {
+            this.errorResponse(res, 422, 'Unable to update user password');
+            return;
+        }
+        SessionFunctions.setUser(req, user);
+
+        await this.okResponse(res);
+    });
 
     protected login = asyncHandler(async (req: Request, res: Response): Promise<void> => {
         const request = new UserLoginRequest();
@@ -77,6 +123,6 @@ export class UsersController extends AbstractController {
 
         SessionFunctions.setUser(req, user);
 
-        return this.okResponse(res);
+        await this.okResponse(res);
     });
 }
