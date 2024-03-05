@@ -1,4 +1,4 @@
-import { Response, Router, Request } from 'express'
+import { Response, Router, Request, NextFunction } from 'express'
 import { UserService } from '../Services/UserService'
 import { AbstractController } from './AbstractController'
 import { UserUpdateRequest } from '../Requests/UserUpdateRequest'
@@ -12,6 +12,7 @@ import { UserLoginRequest } from '../Requests/UserLoginRequest'
 import { validateOrReject } from 'class-validator'
 import bcrypt from 'bcrypt'
 import { SessionFunctions } from '../Services/SessionFunctions'
+import { AuthMiddleware } from '../Middleware/AuthMiddleware'
 
 export class UsersController extends AbstractController {
     public router: Router;
@@ -23,12 +24,13 @@ export class UsersController extends AbstractController {
     }
 
     public intializeRoutes(): void {
+        this.router.use('/users', [AuthMiddleware.checkSessionUser]);
         this.router.get('/users', this.getAllModels);
-        this.router.post('/users', this.createModel);
         this.router.get('/users/:id', this.getModel);
-        this.router.put('/users/:id', this.updateModel);
+        this.router.patch('/users/:id', this.updateModel);
         this.router.delete('/users/:id', this.deleteModel);
         this.router.post('/login', this.login);
+        this.router.post('/register', this.createModel);
     }
 
     protected getFilterData(): UserFilter {

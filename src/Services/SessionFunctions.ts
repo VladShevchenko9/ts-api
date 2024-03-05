@@ -11,7 +11,7 @@ export class SessionFunctions {
         (req.session as CustomSession).user = user;
     }
 
-    public static getUser(req: Request): User {
-        return (req.session as CustomSession).user;
+    public static getUser(req: Request): User | null {
+        return (req.session as CustomSession).user || null;
     }
 }

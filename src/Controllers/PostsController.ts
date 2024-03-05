@@ -7,6 +7,7 @@ import { PostTransformer } from '../ResponseTransformers/PostTransformer'
 import { Container } from '../Container'
 import { UserRepository } from '../Repositories/UserRepository'
 import { PostCreateRequest } from '../Requests/PostCreateRequest'
+import { AuthMiddleware } from '../Middleware/AuthMiddleware'
 
 export class PostsController extends AbstractController {
     public router: Router;
@@ -17,6 +18,7 @@ export class PostsController extends AbstractController {
     }
 
     public intializeRoutes(): void {
+        this.router.use('/posts', [AuthMiddleware.checkSessionUser]);
         this.router.get('/posts', this.getAllModels);
         this.router.post('/posts', this.createModel);
         this.router.get('/posts/:id', this.getModel);
