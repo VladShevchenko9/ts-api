@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Фев 13 2024 г., 19:23
+-- Время создания: Мар 07 2024 г., 19:07
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.2.12
 
@@ -39,10 +39,27 @@ CREATE TABLE `post` (
 --
 
 INSERT INTO `post` (`id`, `title`, `content`, `user_id`) VALUES
-(1, 'abc', 'ands', 1),
-(2, 'ADSS', 'GAST', 2),
-(3, 'qwty', 'test', 3),
-(4, 'Yura', 'Molodec', 3);
+(1, 'title1', 'content1', 1),
+(2, 'title2', 'content2', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `role`
+--
+
+CREATE TABLE `role` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Дамп данных таблицы `role`
+--
+
+INSERT INTO `role` (`id`, `name`) VALUES
+(1, 'user'),
+(2, 'admin');
 
 -- --------------------------------------------------------
 
@@ -55,18 +72,18 @@ CREATE TABLE `user` (
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `phone_number` varchar(255) NOT NULL
+  `phone_number` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role_id` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Дамп данных таблицы `user`
 --
 
-INSERT INTO `user` (`id`, `first_name`, `last_name`, `email`, `phone_number`) VALUES
-(1, 'Stas', 'Melnik', '4076Kr33a@gmail.sru', '380125439218'),
-(2, 'Kostya', 'Krisa2', 'jac@fat.ua', '380125435439'),
-(3, 'Stas', 'Melnik', '459Kr33a@gmail.com', '380125433670'),
-(4, 'Igor', 'Melnik', '223456799940@gmail.com', '+380985406219');
+INSERT INTO `user` (`id`, `first_name`, `last_name`, `email`, `phone_number`, `password`, `role_id`) VALUES
+(1, 'Igor', 'Melnik', '223456799943@gmail.com', '+380985406222', '$2b$10$VQgLhRpHgGNelGVpVhNCk.FrbNVYHB5O8hny5sRIv/aV4AHRcCEmq', 2),
+(2, 'Igor', 'Melnik', '223456799944@gmail.com', '+380985406223', '$2b$10$13KDRNPMhfnLsYXkM9THAe4f39gjCxwPFXh4wlaHvW/QLEbn2KiwO', 1);
 
 --
 -- Индексы сохранённых таблиц
@@ -80,12 +97,19 @@ ALTER TABLE `post`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- Индексы таблицы `role`
+--
+ALTER TABLE `role`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Индексы таблицы `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `phone_number` (`phone_number`);
+  ADD UNIQUE KEY `phone_number` (`phone_number`),
+  ADD KEY `role_id` (`role_id`);
 
 --
 -- AUTO_INCREMENT для сохранённых таблиц
@@ -95,13 +119,19 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT для таблицы `post`
 --
 ALTER TABLE `post`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT для таблицы `role`
+--
+ALTER TABLE `role`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
@@ -112,6 +142,12 @@ ALTER TABLE `user`
 --
 ALTER TABLE `post`
   ADD CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `user`
+--
+ALTER TABLE `user`
+  ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

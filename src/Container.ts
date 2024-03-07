@@ -8,6 +8,7 @@ import { UsersController } from './Controllers/UsersController'
 import { PostsController } from './Controllers/PostsController'
 import { UserTransformer } from './ResponseTransformers/UserTransformer'
 import { PostTransformer } from './ResponseTransformers/PostTransformer'
+import { RoleRepository } from './Repositories/RoleRepository'
 
 export class Container {
     private static readonly appClasses: Record<string, any> = {
@@ -15,6 +16,7 @@ export class Container {
         [QueryBuilder.name]: QueryBuilder,
         [UserRepository.name]: UserRepository,
         [PostRepository.name]: PostRepository,
+        [RoleRepository.name]: RoleRepository,
         [UserService.name]: UserService,
         [PostService.name]: PostService,
         [UsersController.name]: UsersController,

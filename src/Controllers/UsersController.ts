@@ -1,4 +1,4 @@
-import { Response, Router, Request, NextFunction } from 'express'
+import { Response, Router, Request } from 'express'
 import { UserService } from '../Services/UserService'
 import { AbstractController } from './AbstractController'
 import { UserUpdateRequest } from '../Requests/UserUpdateRequest'
@@ -15,6 +15,7 @@ import { SessionFunctions } from '../Services/SessionFunctions'
 import { AuthMiddleware } from '../Middleware/AuthMiddleware'
 import { UserUpdatePasswordRequest } from '../Requests/UserUpdatePasswordRequest'
 import { User } from '../Models/User'
+import { UserMiddleware } from '../Middleware/UserMiddleware'
 
 export class UsersController extends AbstractController {
     public router: Router;
@@ -29,9 +30,9 @@ export class UsersController extends AbstractController {
         this.router.use('/users', [AuthMiddleware.checkSessionUser]);
         this.router.get('/users', this.getAllModels);
         this.router.get('/users/:id', this.getModel);
-        this.router.patch('/users/update-password/:id', this.updatePassword);
-        this.router.patch('/users/:id', this.updateModel);
-        this.router.delete('/users/:id', this.deleteModel);
+        this.router.patch('/users/update-password/:id', [UserMiddleware.checkUserPermission], this.updatePassword);
+        this.router.patch('/users/:id', [UserMiddleware.checkUserPermission], this.updateModel);
+        this.router.delete('/users/:id', [UserMiddleware.checkUserPermission], this.deleteModel);
         this.router.post('/login', this.login);
         this.router.post('/register', this.createModel);
     }
@@ -66,16 +67,21 @@ export class UsersController extends AbstractController {
             await validateOrReject(request);
         } catch (errors) {
             this.errorResponse(res, 400, 'Invalid data');
+
             return;
         }
+
         try {
             user = await this.service.show(userId) as User;
         } catch (error) {
             this.errorResponse(res, 404, error.message);
+
             return;
         }
+
         if (!bcrypt.compareSync(request.oldPassword, user.getAttrValue('password'))) {
             this.errorResponse(res, 409, 'Invalid PASSWORD');
+
             return;
         }
 
@@ -85,12 +91,15 @@ export class UsersController extends AbstractController {
         const data = user.toJson();
         data.password = hash;
         delete data.id;
+
         try {
             user = await this.service.update(userId, data) as User;
         } catch (error) {
             this.errorResponse(res, 422, 'Unable to update user password');
+
             return;
         }
+
         SessionFunctions.setUser(req, user);
 
         await this.okResponse(res);

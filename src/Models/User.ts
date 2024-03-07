@@ -8,6 +8,7 @@ export class User extends AbstractModel {
         email: '',
         phone_number: '',
         password: '',
+        role_id: 1,
     };
     protected static _table: string = 'user';
 
