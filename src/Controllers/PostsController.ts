@@ -8,6 +8,7 @@ import { Container } from '../Container'
 import { UserRepository } from '../Repositories/UserRepository'
 import { PostCreateRequest } from '../Requests/PostCreateRequest'
 import { AuthMiddleware } from '../Middleware/AuthMiddleware'
+import { UserMiddleware } from '../Middleware/UserMiddleware'
 
 export class PostsController extends AbstractController {
     public router: Router;
@@ -20,10 +21,10 @@ export class PostsController extends AbstractController {
     public intializeRoutes(): void {
         this.router.use('/posts', [AuthMiddleware.checkSessionUser]);
         this.router.get('/posts', this.getAllModels);
-        this.router.post('/posts', this.createModel);
+        this.router.post('/posts', [UserMiddleware.checkUserPostCreatePermission], this.createModel);
         this.router.get('/posts/:id', this.getModel);
-        this.router.put('/posts/:id', this.updateModel);
-        this.router.delete('/posts/:id', this.deleteModel);
+        this.router.put('/posts/:id', [UserMiddleware.checkUserPostCreatePermission, UserMiddleware.checkUserPostUpdateOrDeletePermission], this.updateModel);
+        this.router.delete('/posts/:id', [UserMiddleware.checkUserPostUpdateOrDeletePermission], this.deleteModel);
     }
 
     protected getFilterData(): PostFilter {
