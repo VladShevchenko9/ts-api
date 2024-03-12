@@ -1,18 +1,18 @@
 import { Response, Request, NextFunction } from 'express'
 import asyncHandler from 'express-async-handler'
-import { SessionFunctions } from '../Services/SessionFunctions'
-import { RoleChecker } from '../Services/RoleChecker'
 import { Container } from '../Container'
 import { PostRepository } from '../Repositories/PostRepository'
 import { Post } from '../Models/Post'
+import { CurrentUserData } from '../Global/CurrentUserData'
+import { RoleChecker } from '../Services/RoleChecker'
 
 export class UserMiddleware {
     public static checkUserPermission = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        this.checkPermission(req, res, next, parseInt(req.params.id));
+        await this.checkPermission(res, next, parseInt(req.params.id));
     });
 
     public static checkUserPostCreatePermission = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        this.checkPermission(req, res, next, parseInt(req.body.user_id));
+        await this.checkPermission(res, next, parseInt(req.body.user_id));
     });
 
     public static checkUserPostUpdateOrDeletePermission = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -28,13 +28,13 @@ export class UserMiddleware {
             return;
         }
 
-        this.checkPermission(req, res, next, post.getAttrValue('user_id'));
+        await this.checkPermission(res, next, post.getAttrValue('user_id'));
     });
 
-    private static checkPermission(req: Request, res: Response, next: NextFunction, userId: number): void {
-        const sessionUser = SessionFunctions.getUser(req);
+    private static async checkPermission(res: Response, next: NextFunction, userId: number): Promise<void> {
+        const user = CurrentUserData.user;
 
-        if (sessionUser.getAttrValue('id') !== userId && RoleChecker.isUser(sessionUser)) {
+        if (!user || user.getAttrValue('id') !== userId && await RoleChecker.isUser(user)) {
             res.status(403).send('forbidden');
 
             return;

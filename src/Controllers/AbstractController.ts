@@ -125,11 +125,17 @@ export abstract class AbstractController {
         res.status(code).send(message);
     }
 
-    protected async okResponse(res: Response, data: AbstractModel | AbstractModel[] | null = null): Promise<void> {
+    protected async okResponse(res: Response, data: AbstractModel | AbstractModel[] | string | null = null): Promise<void> {
         if (!data) {
             res.status(200).send({ success: true });
             return;
         }
+
+        if (typeof data === 'string') {
+            res.status(200).send({ token: data });
+            return;
+        }
+
 
         const transformer = this.getTransformer();
         const transformedData = await transformer.transform(data);

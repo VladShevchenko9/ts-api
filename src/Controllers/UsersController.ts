@@ -11,11 +11,11 @@ import asyncHandler from 'express-async-handler'
 import { UserLoginRequest } from '../Requests/UserLoginRequest'
 import { validateOrReject } from 'class-validator'
 import bcrypt from 'bcrypt'
-import { SessionFunctions } from '../Services/SessionFunctions'
 import { AuthMiddleware } from '../Middleware/AuthMiddleware'
 import { UserUpdatePasswordRequest } from '../Requests/UserUpdatePasswordRequest'
 import { User } from '../Models/User'
 import { UserMiddleware } from '../Middleware/UserMiddleware'
+import { TokenFunctions } from '../Services/TokenFunctions'
 
 export class UsersController extends AbstractController {
     public router: Router;
@@ -27,7 +27,7 @@ export class UsersController extends AbstractController {
     }
 
     public intializeRoutes(): void {
-        this.router.use('/users', [AuthMiddleware.checkSessionUser]);
+        this.router.use('/users', [AuthMiddleware.authenticate]);
         this.router.get('/users', this.getAllModels);
         this.router.get('/users/:id', this.getModel);
         this.router.patch('/users/update-password/:id', [UserMiddleware.checkUserPermission], this.updatePassword);
@@ -100,8 +100,6 @@ export class UsersController extends AbstractController {
             return;
         }
 
-        SessionFunctions.setUser(req, user);
-
         await this.okResponse(res);
     });
 
@@ -130,8 +128,8 @@ export class UsersController extends AbstractController {
             return;
         }
 
-        SessionFunctions.setUser(req, user);
+        const token = TokenFunctions.generateToken(user);
 
-        await this.okResponse(res);
+        await this.okResponse(res, token);
     });
 }

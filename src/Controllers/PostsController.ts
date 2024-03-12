@@ -19,7 +19,7 @@ export class PostsController extends AbstractController {
     }
 
     public intializeRoutes(): void {
-        this.router.use('/posts', [AuthMiddleware.checkSessionUser]);
+        this.router.use('/posts', [AuthMiddleware.authenticate]);
         this.router.get('/posts', this.getAllModels);
         this.router.post('/posts', [UserMiddleware.checkUserPostCreatePermission], this.createModel);
         this.router.get('/posts/:id', this.getModel);
