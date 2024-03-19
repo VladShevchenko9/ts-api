@@ -1,8 +1,7 @@
 import { Container } from '../Container'
 import { User } from '../Models/User'
 import { RoleRepository } from '../Repositories/RoleRepository'
-import { DB } from './DB'
-import { QueryBuilder } from './QueryBuilder'
+import { KnexQueryBuilder } from './KnexQueryBuilder'
 
 export class RoleChecker {
     private static readonly adminRole = 'admin';
@@ -17,9 +16,8 @@ export class RoleChecker {
     }
 
     private static getRoleRepository(): RoleRepository {
-        const db = Container.createInstance<DB>(DB.name);
-        const qb = Container.createInstance<QueryBuilder>(QueryBuilder.name);
-        return Container.createInstance<RoleRepository>(RoleRepository.name, db, qb);
+        const knexQb = Container.createInstance<KnexQueryBuilder>(KnexQueryBuilder.name);
+        return Container.createInstance<RoleRepository>(RoleRepository.name, knexQb);
     }
 
     private static async getUserRoleName(user: User): Promise<string> {

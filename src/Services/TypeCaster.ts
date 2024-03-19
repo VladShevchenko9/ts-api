@@ -3,6 +3,7 @@ export class TypeCaster {
         if (!value) {
             return undefined;
         }
+
         return String(value);
     }
 }

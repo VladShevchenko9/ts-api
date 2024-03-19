@@ -1,5 +1,3 @@
-import { DB } from './Services/DB'
-import { QueryBuilder } from './Services/QueryBuilder'
 import { UserRepository } from './Repositories/UserRepository'
 import { PostRepository } from './Repositories/PostRepository'
 import { UserService } from './Services/UserService'
@@ -9,11 +7,11 @@ import { PostsController } from './Controllers/PostsController'
 import { UserTransformer } from './ResponseTransformers/UserTransformer'
 import { PostTransformer } from './ResponseTransformers/PostTransformer'
 import { RoleRepository } from './Repositories/RoleRepository'
+import { KnexQueryBuilder } from './Services/KnexQueryBuilder'
 
 export class Container {
     private static readonly appClasses: Record<string, any> = {
-        [DB.name]: DB,
-        [QueryBuilder.name]: QueryBuilder,
+        [KnexQueryBuilder.name]: KnexQueryBuilder,
         [UserRepository.name]: UserRepository,
         [PostRepository.name]: PostRepository,
         [RoleRepository.name]: RoleRepository,

@@ -1,15 +1,13 @@
+import knex from 'knex';
 import { AbstractModel } from '../Models/AbstractModel'
 import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
-import { DB } from '../Services/DB'
-import { QueryBuilder } from '../Services/QueryBuilder'
+import { KnexQueryBuilder } from '../Services/KnexQueryBuilder'
 
 export abstract class AbstractRepository {
-    protected db: DB;
-    protected qb: QueryBuilder;
+    protected qb: knex.Knex;
 
-    constructor(db: DB, qb: QueryBuilder,) {
-        this.db = db;
-        this.qb = qb;
+    constructor(knexQb: KnexQueryBuilder) {
+        this.qb = knexQb.qb;
     }
 
     public async countBy(
@@ -18,15 +16,13 @@ export abstract class AbstractRepository {
         exceptionId: number | null = null,
         table: string = this.table,
     ): Promise<number> {
-        const queryBuilder = this.qb.select('COUNT(id) AS total')
-            .from(table)
-            .where(property, '=', value);
+        const queryBuilder = this.qb(table).where(property, '=', value)
 
         if (typeof exceptionId === 'number') {
             queryBuilder.andWhere('id', '!=', exceptionId);
         }
 
-        const totalData = await this.db.getRow(queryBuilder.sql);
+        const totalData = await queryBuilder.count('id as total').first();
 
         if (totalData.hasOwnProperty('total') && typeof totalData.total === 'number') {
             return totalData.total;
@@ -39,39 +35,30 @@ export abstract class AbstractRepository {
         const offset = (queryData.page - 1) * queryData.limit;
         const builder = this.qb.select().from(this.table);
         const filterData = queryData.filter.toRecord();
-        Object.keys(filterData).map((property, index) => {
-            if (index === 0) {
-                builder.where(property, '=', filterData[property]);
-                return;
-            }
-
-            builder.andWhere(property, '=', queryData[property]);
+        Object.keys(filterData).map((property) => {
+            builder.where(property, '=', queryData[property]);
         });
-        const sql = builder.limit(queryData.limit).offset(offset).sql;
-        const records = await this.db.executeQuery(sql) || [];
+        const records = await builder.limit(queryData.limit).offset(offset);
 
         return records.map(data => this.makeModel(data));
     }
 
     public async find(id: number): Promise<AbstractModel> {
-        const sql = this.qb.select().from(this.table).where('id', '=', id).sql;
-        const data = await this.db.getRow(sql);
+        const data = await this.qb.select().from(this.table).where('id', '=', id).first();
         return this.makeModel(data);
     }
 
     public async create(data: Record<string, any>): Promise<number> {
-        const sql = this.qb.insert(this.table).set(data).sql;
-        return await this.db.insert(sql);
+        const ids = await this.qb.insert(data).into(this.table);
+        return ids.pop();
     }
 
     public async update(id: number, data: Record<string, any>): Promise<void> {
-        const sql = this.qb.update(this.table).set(data).where('id', '=', id).sql;
-        await this.db.executeQuery(sql);
+        await this.qb.update(data).table(this.table).where('id', '=', id);
     }
 
     public async delete(id: number): Promise<void> {
-        const sql = this.qb.delete().from(this.table).where('id', '=', id).sql;
-        await this.db.executeQuery(sql);
+        await this.qb.delete().from(this.table).where('id', '=', id);
     }
 
     public async findBy(filter: Record<string, number | string>): Promise<AbstractModel> {
@@ -79,15 +66,10 @@ export abstract class AbstractRepository {
         const fields = Object.keys(filter);
 
         for (let i = 0; i < fields.length; i++) {
-            if (i === 0) {
-                queryBuilder.where(fields[0], '=', filter[fields[0]]);
-                continue;
-            }
-
-            queryBuilder.andWhere(fields[i], '=', filter[fields[i]]);
+            queryBuilder.where(fields[i], '=', filter[fields[i]]);
         }
 
-        const data = await this.db.getRow(queryBuilder.sql);
+        const data = await queryBuilder.first();
         return this.makeModel(data);
     }
 
