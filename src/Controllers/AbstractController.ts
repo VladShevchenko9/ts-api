@@ -56,8 +56,8 @@ export abstract class AbstractController {
 
         try {
             model = await this.service.show(modelId);
-        } catch (error) {
-            this.errorResponse(res, 404, 'Model not found!');
+        } catch (e) {
+            this.errorResponse(res, 404, e.message);
             return;
         }
 
@@ -72,7 +72,6 @@ export abstract class AbstractController {
         try {
             await validateOrReject(request);
         } catch (errors) {
-            console.log(errors);
             this.errorResponse(res, 400, errors);
             return;
         }
