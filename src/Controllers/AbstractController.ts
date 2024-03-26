@@ -1,7 +1,7 @@
 import { Response, Router, Request } from 'express'
 import { CrudServiceInterface } from '../Services/CrudServiceInterface'
 import asyncHandler from 'express-async-handler'
-import { validateOrReject } from 'class-validator'
+import { ValidationError, validateOrReject } from 'class-validator'
 import { AbstractRequest } from '../Requests/AbstractRequest'
 import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
 import { AbstractFilter } from '../Requests/Filters/AbstractFilter'
@@ -9,6 +9,7 @@ import { FilterRequest } from '../Requests/FilterRequest'
 import { TypeCaster } from '../Services/TypeCaster'
 import { AbstractTransformer } from '../ResponseTransformers/AbstractTransformer'
 import { AbstractModel } from '../Models/AbstractModel'
+import { ValidationErrorParser } from '../Services/ValidationErrorParser'
 
 export abstract class AbstractController {
     public router: Router;
@@ -25,7 +26,7 @@ export abstract class AbstractController {
         try {
             await validateOrReject(filterRequest);
         } catch (errors) {
-            this.errorResponse(res, 400, 'Invalid filter parameter');
+            this.errorResponse(res, 400, errors);
             return;
         }
 
@@ -36,7 +37,7 @@ export abstract class AbstractController {
         try {
             await validateOrReject(indexRequest);
         } catch (errors) {
-            this.errorResponse(res, 400, 'Invalid query params');
+            this.errorResponse(res, 400, errors);
             return;
         }
 
@@ -71,7 +72,7 @@ export abstract class AbstractController {
         try {
             await validateOrReject(request);
         } catch (errors) {
-            this.errorResponse(res, 400, 'Invalid data');
+            this.errorResponse(res, 400, errors);
             return;
         }
 
@@ -94,7 +95,7 @@ export abstract class AbstractController {
         try {
             await validateOrReject(request);
         } catch (errors) {
-            this.errorResponse(res, 400, 'Invalid data');
+            this.errorResponse(res, 400, errors);
             return;
         }
 
@@ -121,8 +122,13 @@ export abstract class AbstractController {
         await this.okResponse(res);
     });
 
-    protected errorResponse(res: Response, code: number, message: string): void {
-        res.status(code).send(message);
+    protected errorResponse(res: Response, code: number, data: ValidationError[] | string): void {
+        if (typeof data === 'string') {
+            res.status(code).send(data);
+            return;
+        }
+
+        res.status(code).send(ValidationErrorParser.parseValidationErrors(data));
     }
 
     protected async okResponse(res: Response, data: AbstractModel | AbstractModel[] | string | null = null): Promise<void> {

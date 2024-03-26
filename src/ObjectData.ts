@@ -7,19 +7,15 @@ export class ObjectData {
 
     public addObjectProperty(key: string, value: any): Record<string, string> | string {
         const keySplit = key.split('.');
-        // console.log(keySplit);
-        // console.log(objData.currentObject);
-        console.log(objData.currentObject.hasOwnProperty(keySplit[0]));
-        if (objData.currentObject.hasOwnProperty(keySplit[0])) {
-            
-        }
-        console.log(objData.currentObject);
+        console.log(keySplit);
 
-        for(let i = 0; i < objData.currentObject.length; i++) {
+        for (let i = 0; i < objData.currentObject.length; i++) {
+            console.log('111');
+
             if(objData.currentObject.hasOwnProperty(keySplit[i])){
-
-                return objData.currentObject[keySplit[i]].keySplit[i + 1] = value;
-             }
+                console.log('222');
+                return objData.currentObject[keySplit[i]] = value;
+            }
         }
 
         return objData._currentObject[key] = value;
@@ -28,26 +24,24 @@ export class ObjectData {
 };
 
 const objData = new ObjectData();
-// console.log(objData.currentObject);
 
-// objData.addObjectProperty('name', 'Roma');
 objData.addObjectProperty('age', {});
 objData.addObjectProperty('age.old', 12);
 
-// console.log(objData.currentObject);
+console.log(objData.currentObject);
 
-const data = {
-    user: {
-        child: {
-            name: 'Stas',
-        }
-    }
-}
+// const data = {
+//     user: {
+//         child: {
+//             name: 'Stas',
+//         }
+//     }
+// }
 
-const tmp = data.user.child as Record<string, any>
-tmp.age = 12
+// const tmp = data.user.child as Record<string, any>
+// tmp.age = 12
 
-console.log(data);
+// console.log(data);
 
 // const keySplit = key.split('.');
 // let obj = objData.currentObject;

@@ -66,7 +66,7 @@ export class UsersController extends AbstractController {
         try {
             await validateOrReject(request);
         } catch (errors) {
-            this.errorResponse(res, 400, 'Invalid data');
+            this.errorResponse(res, 400, errors);
 
             return;
         }
@@ -112,7 +112,7 @@ export class UsersController extends AbstractController {
         try {
             await validateOrReject(request);
         } catch (errors) {
-            this.errorResponse(res, 400, 'Invalid data');
+            this.errorResponse(res, 400, errors);
             return;
         }
 
