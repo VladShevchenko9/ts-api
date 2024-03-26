@@ -8,6 +8,7 @@ import { UserTransformer } from './ResponseTransformers/UserTransformer'
 import { PostTransformer } from './ResponseTransformers/PostTransformer'
 import { RoleRepository } from './Repositories/RoleRepository'
 import { KnexQueryBuilder } from './Services/KnexQueryBuilder'
+import { UnregisteredClassException } from './Exceptions/UnregisteredClassException'
 
 export class Container {
     private static readonly appClasses: Record<string, any> = {
@@ -43,7 +44,7 @@ export class Container {
             if (constructor) {
                 this.instances[className] = new constructor(...args);
             } else {
-                throw new Error(`Class "${className}" is not registered.`);
+                throw new UnregisteredClassException(className);
             }
         }
 

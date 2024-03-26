@@ -3,6 +3,9 @@ import { UserRepository } from '../Repositories/UserRepository'
 import { CrudServiceInterface } from './CrudServiceInterface'
 import { AbstractModelService } from './AbstractModelService'
 import bcrypt from 'bcrypt'
+import { ModelNotFoundByFilterException } from '../Exceptions/ModelNotFoundByFilterException'
+import { CrudServiceException } from '../Exceptions/CrudServiceException'
+import { ModelDuplicateException } from '../Exceptions/ModelDuplicateException'
 
 export class UserService extends AbstractModelService implements CrudServiceInterface {
     protected repository: UserRepository;
@@ -17,7 +20,7 @@ export class UserService extends AbstractModelService implements CrudServiceInte
         try {
             user = await this.repository.findBy({ email: email });
         } catch (e) {
-            throw new Error('User does not exist');
+            throw new ModelNotFoundByFilterException({ email: email });
         }
 
         return user;
@@ -30,15 +33,15 @@ export class UserService extends AbstractModelService implements CrudServiceInte
             emailDuplicates = await this.repository.countBy('email', data.email, id);
             phoneDuplicates = await this.repository.countBy('phone_number', data.phone_number, id);
         } catch (e) {
-            throw new Error('Unable to validate user data');
+            throw new CrudServiceException('Unable to validate user data');
         }
 
         if (emailDuplicates > 0) {
-            throw new Error('User with this Email already exists');
+            throw new ModelDuplicateException('email', data.email);
         }
 
         if (phoneDuplicates > 0) {
-            throw new Error('User with this Phone number already exists');
+            throw new ModelDuplicateException('phone_number', data.phone_number);
         }
 
         if (!id) {

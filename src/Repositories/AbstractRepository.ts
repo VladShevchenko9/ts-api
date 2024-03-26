@@ -1,7 +1,9 @@
-import knex from 'knex';
+import knex from 'knex'
 import { AbstractModel } from '../Models/AbstractModel'
 import { CommonIndexRequest } from '../Requests/CommonIndexRequest'
 import { KnexQueryBuilder } from '../Services/KnexQueryBuilder'
+import { UnexpectedDbData } from '../Exceptions/UnexpectedDbData'
+import { ModelNotFoundException } from '../Exceptions/ModelNotFoundException'
 
 export abstract class AbstractRepository {
     protected qb: knex.Knex;
@@ -24,11 +26,11 @@ export abstract class AbstractRepository {
 
         const totalData = await queryBuilder.count('id as total').first();
 
-        if (totalData.hasOwnProperty('total') && typeof totalData.total === 'number') {
-            return totalData.total;
+        if (!totalData.hasOwnProperty('total') || typeof totalData.total !== 'number') {
+            throw new UnexpectedDbData('total');
         }
 
-        throw new Error('Can`t count total records');
+        return totalData.total;
     }
 
     public async getAll(queryData: CommonIndexRequest): Promise<AbstractModel[]> {
@@ -44,7 +46,18 @@ export abstract class AbstractRepository {
     }
 
     public async find(id: number): Promise<AbstractModel> {
-        const data = await this.qb.select().from(this.table).where('id', '=', id).first();
+        let data: Record<string, any>;
+
+        try {
+            data = await this.qb.select().from(this.table).where('id', '=', id).first();
+        } catch (e) {
+            throw new ModelNotFoundException(id);
+        }
+
+        if (!data) {
+            throw new ModelNotFoundException(id);
+        }
+
         return this.makeModel(data);
     }
 

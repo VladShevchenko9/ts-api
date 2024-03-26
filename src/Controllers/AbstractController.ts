@@ -10,6 +10,7 @@ import { TypeCaster } from '../Services/TypeCaster'
 import { AbstractTransformer } from '../ResponseTransformers/AbstractTransformer'
 import { AbstractModel } from '../Models/AbstractModel'
 import { ValidationErrorParser } from '../Services/ValidationErrorParser'
+import { GeneralException } from '../Exceptions/GeneralException'
 
 export abstract class AbstractController {
     public router: Router;
@@ -56,8 +57,8 @@ export abstract class AbstractController {
 
         try {
             model = await this.service.show(modelId);
-        } catch (e) {
-            this.errorResponse(res, 404, e.message);
+        } catch (error) {
+            this.errorResponse(res, 404, error);
             return;
         }
 
@@ -78,8 +79,8 @@ export abstract class AbstractController {
 
         try {
             model = await this.service.store(request);
-        } catch (e) {
-            this.errorResponse(res, 422, e.message);
+        } catch (error) {
+            this.errorResponse(res, 422, error);
             return;
         }
 
@@ -101,8 +102,8 @@ export abstract class AbstractController {
 
         try {
             model = await this.service.update(modelId, request);
-        } catch (e) {
-            this.errorResponse(res, 422, e.message);
+        } catch (error) {
+            this.errorResponse(res, 422, error);
             return;
         }
 
@@ -114,21 +115,27 @@ export abstract class AbstractController {
 
         try {
             await this.service.delete(modelId);
-        } catch (e) {
-            this.errorResponse(res, 400, e.message);
+        } catch (error) {
+            this.errorResponse(res, 400, error);
             return;
         }
 
         await this.okResponse(res);
     });
 
-    protected errorResponse(res: Response, code: number, data: ValidationError[] | string): void {
-        if (typeof data === 'string') {
-            res.status(code).send(data);
+    protected errorResponse(res: Response, code: number, exceptions: ValidationError[] | GeneralException | string): void {
+        if (typeof exceptions === 'string') {
+            res.status(code).send(exceptions);
             return;
         }
 
-        res.status(code).send(ValidationErrorParser.parseValidationErrors(data));
+        if (Array.isArray(exceptions)) {
+            res.status(code).send(ValidationErrorParser.parseValidationErrors(exceptions));
+
+            return;
+        }
+
+        res.status(code).send(exceptions.message);
     }
 
     protected async okResponse(res: Response, data: AbstractModel | AbstractModel[] | string | null = null): Promise<void> {

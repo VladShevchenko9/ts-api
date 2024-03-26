@@ -20,6 +20,8 @@ import { TokenFunctions } from '../Services/TokenFunctions'
 export class UsersController extends AbstractController {
     public router: Router;
     protected service: UserService;
+    private readonly invalidPasswordMessage: string = 'The provided password is invalid.';
+    private readonly updatePasswordErrorMessage: string = 'Unable to update user password.';
 
     constructor(userService: UserService, router: Router) {
         super(userService, router);
@@ -74,13 +76,13 @@ export class UsersController extends AbstractController {
         try {
             user = await this.service.show(userId) as User;
         } catch (error) {
-            this.errorResponse(res, 404, error.message);
+            this.errorResponse(res, 404, error);
 
             return;
         }
 
         if (!bcrypt.compareSync(request.oldPassword, user.getAttrValue('password'))) {
-            this.errorResponse(res, 409, 'Invalid PASSWORD');
+            this.errorResponse(res, 409, this.invalidPasswordMessage);
 
             return;
         }
@@ -95,7 +97,7 @@ export class UsersController extends AbstractController {
         try {
             user = await this.service.update(userId, data) as User;
         } catch (error) {
-            this.errorResponse(res, 422, 'Unable to update user password');
+            this.errorResponse(res, 422, this.updatePasswordErrorMessage);
 
             return;
         }
@@ -119,12 +121,12 @@ export class UsersController extends AbstractController {
         try {
             user = await this.service.getUserByEmail(request.email);
         } catch (error) {
-            this.errorResponse(res, 404, error.message);
+            this.errorResponse(res, 404, error);
             return;
         }
 
         if (!bcrypt.compareSync(request.password, user.getAttrValue('password'))) {
-            this.errorResponse(res, 409, 'Invalid PASSWORD');
+            this.errorResponse(res, 409, this.invalidPasswordMessage);
             return;
         }
 

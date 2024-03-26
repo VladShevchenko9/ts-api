@@ -7,6 +7,8 @@ import { CurrentUserData } from '../Global/CurrentUserData'
 import { RoleChecker } from '../Services/RoleChecker'
 
 export class UserMiddleware {
+    private static readonly forbiddenMessage: string = 'This operation is not allowed';
+
     public static checkUserPermission = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         await this.checkPermission(res, next, parseInt(req.params.id));
     });
@@ -23,7 +25,7 @@ export class UserMiddleware {
         try {
             post = await postRepository.find(postId) as Post;
         } catch (error) {
-            res.status(404).send('post Not Found');
+            res.status(404).send(error.message);
 
             return;
         }
@@ -35,7 +37,7 @@ export class UserMiddleware {
         const user = CurrentUserData.user;
 
         if (!user || user.getAttrValue('id') !== userId && await RoleChecker.isUser(user)) {
-            res.status(403).send('forbidden');
+            res.status(403).send(this.forbiddenMessage);
 
             return;
         }

@@ -3,6 +3,7 @@ import jsonwebtoken from 'jsonwebtoken'
 import 'dotenv/config'
 import { Request } from 'express'
 import { CurrentUserData } from '../Global/CurrentUserData'
+import { TokenException } from '../Exceptions/TokenException'
 
 export class TokenFunctions {
     public static generateToken(user: User): string {
@@ -14,12 +15,12 @@ export class TokenFunctions {
         const token = authHeader && authHeader.split(' ')[1];
 
         if (!token) {
-            throw new Error('token not found');
+            throw new TokenException('Unable to find token in authorization header.');
         }
 
         jsonwebtoken.verify(token, '' + process.env.TOKEN_SECRET, (err: Error, userData: Record<string, any>) => {
             if (err) {
-                throw new Error('invalid token');
+                throw new TokenException('The token is invalid.');
             }
 
             const user = new User().populateFromObject(userData) as User;
