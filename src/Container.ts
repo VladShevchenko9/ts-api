@@ -9,9 +9,11 @@ import { PostTransformer } from './ResponseTransformers/PostTransformer'
 import { RoleRepository } from './Repositories/RoleRepository'
 import { KnexQueryBuilder } from './Services/KnexQueryBuilder'
 import { UnregisteredClassException } from './Exceptions/UnregisteredClassException'
+import { Log } from './Events/Log'
 
 export class Container {
     private static readonly appClasses: Record<string, any> = {
+        [Log.name]: Log,
         [KnexQueryBuilder.name]: KnexQueryBuilder,
         [UserRepository.name]: UserRepository,
         [PostRepository.name]: PostRepository,

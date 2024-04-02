@@ -16,6 +16,7 @@ import { UserUpdatePasswordRequest } from '../Requests/UserUpdatePasswordRequest
 import { User } from '../Models/User'
 import { UserMiddleware } from '../Middleware/UserMiddleware'
 import { TokenFunctions } from '../Services/TokenFunctions'
+import { Log } from '../Events/Log'
 
 export class UsersController extends AbstractController {
     public router: Router;
@@ -131,6 +132,8 @@ export class UsersController extends AbstractController {
         }
 
         const token = TokenFunctions.generateToken(user);
+
+        Container.createInstance<Log>(Log.name).fire(`user ${request.email} just logged in`);
 
         await this.okResponse(res, token);
     });
