@@ -20,7 +20,7 @@ function createUser(): Record<string, string | number> {
     };
 }
 
-export default async function populateUsersTable() {
+export default async function populateUsersTable(): Promise<void> {
     const knexQb = Container.createInstance<KnexQueryBuilder>(KnexQueryBuilder.name);
     const userRepository = Container.createInstance<UserRepository>(UserRepository.name, knexQb);
     const usersTotal = getTotalNumber();

@@ -2,6 +2,7 @@ import { Container } from '../../src/Container'
 import { KnexQueryBuilder } from '../../src/Services/KnexQueryBuilder'
 import * as fs from 'fs'
 import populateUsersTable from './populateUsersTable'
+import populatePostsTable from './populatePostsTable'
 
 const knexQb = Container.createInstance<KnexQueryBuilder>(KnexQueryBuilder.name);
 
@@ -18,6 +19,7 @@ const knexQb = Container.createInstance<KnexQueryBuilder>(KnexQueryBuilder.name)
     }
 
     await populateUsersTable();
+    await populatePostsTable();
 
     process.exit();
 })();

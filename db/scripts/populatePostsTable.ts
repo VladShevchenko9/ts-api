@@ -6,10 +6,6 @@ import { UserRepository } from '../../src/Repositories/UserRepository'
 import getRandomInt from './random'
 import getTotalNumber from './totalNumber'
 
-const knexQb = Container.createInstance<KnexQueryBuilder>(KnexQueryBuilder.name);
-const postRepository = Container.createInstance<PostRepository>(PostRepository.name, knexQb);
-const userRepository = Container.createInstance<UserRepository>(UserRepository.name, knexQb);
-
 function getRundomUserId(arrayOfIds: Record<'id', number>[]): number {
     const randomElement = arrayOfIds[getRandomInt(0, arrayOfIds.length - 1)]
 
@@ -24,15 +20,16 @@ function createPost(arrayOfIds: Record<'id', number>[]): Record<'title' | 'conte
     };
 }
 
-const postsTotal = getTotalNumber();
+export default async function populatePostsTable(): Promise<void> {
+    const knexQb = Container.createInstance<KnexQueryBuilder>(KnexQueryBuilder.name);
+    const postRepository = Container.createInstance<PostRepository>(PostRepository.name, knexQb);
+    const userRepository = Container.createInstance<UserRepository>(UserRepository.name, knexQb);
 
-(async () => {
-    let userIds = await knexQb.qb.select('id').from(userRepository.table);
+    const postsTotal = getTotalNumber();
+    const userIds = await knexQb.qb.select('id').from(userRepository.table);
 
     for (let i = 0; i < postsTotal; i++) {
         const post = createPost(userIds);
         await postRepository.create(post);
     }
-
-    process.exit();
-})();
+}
