@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Мар 07 2024 г., 19:07
+-- Время создания: Мар 28 2024 г., 18:14
 -- Версия сервера: 10.4.32-MariaDB
 -- Версия PHP: 8.2.12
 
@@ -40,7 +40,7 @@ CREATE TABLE `post` (
 
 INSERT INTO `post` (`id`, `title`, `content`, `user_id`) VALUES
 (1, 'title1', 'content1', 1),
-(2, 'title2', 'content2', 2);
+(2, 'Yura', 'NeClown', 2);
 
 -- --------------------------------------------------------
 
@@ -83,7 +83,7 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`id`, `first_name`, `last_name`, `email`, `phone_number`, `password`, `role_id`) VALUES
 (1, 'Igor', 'Melnik', '223456799943@gmail.com', '+380985406222', '$2b$10$VQgLhRpHgGNelGVpVhNCk.FrbNVYHB5O8hny5sRIv/aV4AHRcCEmq', 2),
-(2, 'Igor', 'Melnik', '223456799944@gmail.com', '+380985406223', '$2b$10$13KDRNPMhfnLsYXkM9THAe4f39gjCxwPFXh4wlaHvW/QLEbn2KiwO', 1);
+(2, 'Stas', 'Melnik', '4076Kr33a1@gmail.sru', '380125433670', '$2b$10$T4ibx/IahDShElOhMdHQgeb8rGPBntsHzWIjhrbDYERWlFcNdqG4m', 1);
 
 --
 -- Индексы сохранённых таблиц
