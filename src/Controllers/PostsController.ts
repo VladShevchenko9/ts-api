@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Response, Router, Request } from 'express'
 import { PostService } from '../Services/PostService'
 import { AbstractController } from './AbstractController'
 import { PostUpdateRequest } from '../Requests/PostUpdateRequest'
@@ -9,6 +9,10 @@ import { UserRepository } from '../Repositories/UserRepository'
 import { PostCreateRequest } from '../Requests/PostCreateRequest'
 import { AuthMiddleware } from '../Middleware/AuthMiddleware'
 import { UserMiddleware } from '../Middleware/UserMiddleware'
+import asyncHandler from 'express-async-handler'
+import { validateOrReject } from 'class-validator'
+import { UserCreateRequest } from '../Requests/UserCreateRequest'
+import { UserCreatedPostEvent } from '../Events/UserCreatedPostEvent'
 
 export class PostsController extends AbstractController {
     public router: Router;
@@ -26,6 +30,15 @@ export class PostsController extends AbstractController {
         this.router.put('/posts/:id', [UserMiddleware.checkUserPostCreatePermission, UserMiddleware.checkUserPostUpdateOrDeletePermission], this.updateModel);
         this.router.delete('/posts/:id', [UserMiddleware.checkUserPostUpdateOrDeletePermission], this.deleteModel);
     }
+
+    protected createModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+        const model = await this.createModelBase(req, res);
+
+        if (model) {
+            Container.createInstance<UserCreatedPostEvent>(UserCreatedPostEvent.name).emitEvent(model.getAttrValue('user_id'));
+            await this.okResponse(res, model);
+        }
+    });
 
     protected getFilterData(): PostFilter {
         return new PostFilter();

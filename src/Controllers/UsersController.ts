@@ -133,7 +133,7 @@ export class UsersController extends AbstractController {
 
         const token = TokenFunctions.generateToken(user);
 
-        Container.createInstance<Log>(Log.name).fire(`user ${request.email} just logged in`);
+        Container.createInstance<Log>(Log.name).emitEvent(`user ${request.email} just logged in`);
 
         await this.okResponse(res, token);
     });

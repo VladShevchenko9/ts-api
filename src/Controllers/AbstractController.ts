@@ -66,25 +66,11 @@ export abstract class AbstractController {
     });
 
     protected createModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-        let model;
-        const request = this.getCreateRequest();
-        request.populateData(req.body);
+        const model = await this.createModelBase(req, res);
 
-        try {
-            await validateOrReject(request);
-        } catch (errors) {
-            this.errorResponse(res, 400, errors);
-            return;
+        if (model) {
+            await this.okResponse(res, model);
         }
-
-        try {
-            model = await this.service.store(request);
-        } catch (error) {
-            this.errorResponse(res, 422, error);
-            return;
-        }
-
-        await this.okResponse(res, model);
     });
 
     protected updateModel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -153,6 +139,28 @@ export abstract class AbstractController {
         const transformer = this.getTransformer();
         const transformedData = await transformer.transform(data);
         res.status(200).send(transformedData);
+    }
+
+    protected async createModelBase(req: Request, res: Response): Promise<AbstractModel | null> {
+        let model: AbstractModel | null;
+        const request = this.getCreateRequest();
+        request.populateData(req.body);
+
+        try {
+            await validateOrReject(request);
+        } catch (errors) {
+            this.errorResponse(res, 400, errors);
+            return null;
+        }
+
+        try {
+            model = await this.service.store(request);
+        } catch (error) {
+            this.errorResponse(res, 422, error);
+            return null;
+        }
+
+        return model;
     }
 
     public abstract intializeRoutes(): void;
