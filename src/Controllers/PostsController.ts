@@ -10,8 +10,6 @@ import { PostCreateRequest } from '../Requests/PostCreateRequest'
 import { AuthMiddleware } from '../Middleware/AuthMiddleware'
 import { UserMiddleware } from '../Middleware/UserMiddleware'
 import asyncHandler from 'express-async-handler'
-import { validateOrReject } from 'class-validator'
-import { UserCreateRequest } from '../Requests/UserCreateRequest'
 import { UserCreatedPostEvent } from '../Events/UserCreatedPostEvent'
 
 export class PostsController extends AbstractController {
