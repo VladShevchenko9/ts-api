@@ -1,6 +1,7 @@
 import express from 'express'
 import { AbstractController } from './Controllers/AbstractController'
 import 'dotenv/config'
+import cors from 'cors'
 
 export class App {
     public app: express.Application;
@@ -16,6 +17,7 @@ export class App {
 
     private initializeMiddlewares(): void {
         this.app.use(express.json());
+        this.app.use(cors());
     }
 
     private initializeControllers(controllers: AbstractController[]): void {
